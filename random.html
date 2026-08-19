@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Undertale Battle Engine</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="battle-container">
+    <!-- Enemy Visual Area -->
+    <!-- Update your #enemy-area in index.html -->
+<div id="enemy-area">
+  <!-- Enemy HP Display -->
+  <div id="enemy-hp-container" class="hidden">
+    <div id="enemy-hp-bg">
+      <div id="enemy-hp-fill"></div>
+    </div>
+    <div id="damage-text"></div>
+  </div>
+
+  <div id="enemy-sprite">👻</div>
+  <div id="dialogue-bubble">Ribbit, ribbit...</div>
+</div>
+
+    <!-- Arena Box -->
+    <canvas id="arena" width="540" height="140"></canvas>
+
+    <!-- Player Stats Bar -->
+    <div id="stats-bar">
+      <span>CHARA</span>
+      <span>LV 1</span>
+      <div id="hp-container">
+        <span>HP</span>
+        <div id="hp-bar-bg"><div id="hp-bar-fill"></div></div>
+        <span id="hp-text">20 / 20</span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div id="menu-buttons">
+      <button class="btn active" id="btn-fight">FIGHT</button>
+      <button class="btn" id="btn-act">ACT</button>
+      <button class="btn" id="btn-item">ITEM</button>
+      <button class="btn" id="btn-mercy">MERCY</button>
+    </div>
+  </div>
+
+  <script src="game1.js"></script>
+</body>
+</html>
