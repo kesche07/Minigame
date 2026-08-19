@@ -9,9 +9,12 @@ body {
   background-color: #000;
   color: #fff;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  height: 100vh;
+  justify-content: center;
+  min-height: 100vh;
+  padding-top: 80px; /* Gives headroom below fixed navbar */
+  padding-bottom: 20px;
 }
 /* Navigation Bar */
 .navbar {
@@ -53,10 +56,6 @@ body {
   color: #ff7900;
 }
 
-/* Offset battle container to account for fixed navbar */
-body {
-  padding-top: 60px;
-}
 
 #battle-container {
   width: 600px;
