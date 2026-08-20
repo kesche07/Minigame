@@ -4,6 +4,24 @@
   <meta charset="UTF-8">
   <title>Small Minigame</title>
   <link rel="stylesheet" href="./style.css">
+  <style>
+    .controls {
+    display: flex;
+    justify-content: space-between;
+    width: 1024px;
+    margin-top: 10px;
+}
+
+button {
+    width: 60px;
+    height: 60px;
+    font-size: 20px;
+    font-weight: bold;
+    user-select: none; /* Prevents text selection while holding */
+    touch-action: manipulation; /* Prevents double-tap zoom on mobile */
+    cursor: pointer;
+}
+  </style>
 </head>
 <body>
   <!-- Navigation Bar -->
@@ -18,6 +36,22 @@
   <canvas>
     
   </canvas>
+
+  <div class="controls">
+    <!-- Player Controls -->
+    <div>
+        <button id="p-left">A</button>
+        <button id="p-jump">W</button>
+        <button id="p-right">D</button>
+    </div>
+
+    <!-- Enemy Controls -->
+    <div>
+        <button id="e-left">←</button>
+        <button id="e-jump">↑</button>
+        <button id="e-right">→</button>
+    </div>
+</div>
   <script src="./game.js"></script>
 </body>
 </html>
