@@ -13,20 +13,40 @@ const gravity =.7
 
 //instances for player and enemy
 class Sprite {
-    constructor({position,velocity}){
+    constructor({position,velocity,color, offset}){
         this.position = position
-        this.velocity = velocity;
+        this.velocity = velocity
+        this.width = 50
+        this.color = color
         this.height =  150
         this.lastKey
+        this.hitbox = {
+            position:{
+                x: this.position.x,
+                y: this.position.y
+            },
+            offset,
+            width: 100,
+            height: 50
+        }
+        this.isAttacking
     }
 
     draw(){
-        c.fillStyle ='blue'
+        c.fillStyle =this.color
         c.fillRect(this.position.x,this.position.y,50,this.height)
+
+        //attack box
+        if(this.isAttacking){
+        c.fillStyle ='yellow'
+        c.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height)
+    }
     }
 
     update(){
         this.draw()
+        this.hitbox.position.x = this.position.x + this.hitbox.offset.x
+        this.hitbox.position.y = this.position.y
 
         this.position.x  += this.velocity.x
         this.position.y += this.velocity.y
@@ -38,6 +58,13 @@ class Sprite {
             this.velocity.y += gravity
         }
     }
+
+    attack(){
+            this.isAttacking = true
+            setTimeout(()=>{
+                this.isAttacking = false
+            },100)
+        }
 }
 
 //player creation
@@ -48,6 +75,11 @@ const player = new Sprite({
    }
    ,
    velocity: {
+    x:0,
+    y:0
+   },
+   color: 'red',
+   offset: {
     x:0,
     y:0
    }
@@ -64,6 +96,11 @@ const enemy = new Sprite({
    ,
    velocity: {
     x:0,
+    y:0
+   },
+   color: 'blue',
+   offset: {
+    x:-50,
     y:0
    }
 })
@@ -96,7 +133,14 @@ const keys = {
     }
 
 }
-
+function rectangularCollision({rectangle1, rectangle2}){
+    return (
+        rectangle1.hitbox.position.x + rectangle1.hitbox.width >= rectangle2.position.x && 
+        rectangle1.hitbox.position.x <= rectangle2.position.x +rectangle2.width &&
+        rectangle1.hitbox.position.y + rectangle1.hitbox.height >= rectangle2.position.y &&
+        rectangle1.hitbox.position.y <= rectangle2.position.y +rectangle2.height 
+    )
+}
 //inf loop per frame for movement
 function animate(){
     window.requestAnimationFrame(animate)
@@ -124,13 +168,35 @@ function animate(){
         enemy.velocity.x=5
     }
     
-}
+    //if player is attacking detection
+    if(rectangularCollision({
+        rectangle1:player,
+        rectangle2:enemy})&&
+        player.isAttacking)
+        {
+            player.isAttacking = false
+            console.log('player attack')
+        }
+
+    //enemy attacking detection
+    if(rectangularCollision({
+        rectangle1:enemy,
+        rectangle2:player})&&
+        enemy.isAttacking)
+        {
+            enemy.isAttacking = false
+            console.log('enemy attack')
+        }
+    }
+
+    
+        
+    
 
 animate()
 
 
 window.addEventListener('keydown', (event) =>{
-    console.log(event.key)
     switch (event.key.toLowerCase()){
 
         //player controls
@@ -146,6 +212,11 @@ window.addEventListener('keydown', (event) =>{
         case 'w':
             player.velocity.y = -20
             break 
+        
+        case 's':
+            player.attack()
+            break
+
     }
 
     //enemy
@@ -162,8 +233,10 @@ window.addEventListener('keydown', (event) =>{
         case 'ArrowUp':
             enemy.velocity.y = -20
             break 
+        case 'ArrowDown':
+            enemy.attack()
+            break
     }
-    console.log(event.key);
 })
 
 window.addEventListener('keyup', (event) =>{
@@ -192,7 +265,6 @@ window.addEventListener('keyup', (event) =>{
             keys.ArrowUp.pressed = false
             break 
     }
-    console.log(event.key);
 })
 
 
