@@ -30,6 +30,7 @@
       border: 5px solid red;
     }
     .healthbar{
+      z-index: 3;
       display:flex;
       align-items: center;
       justify-content: center;
@@ -47,19 +48,36 @@
       width: 100%;
     }
     .timer{
+      display: flex;
+      justify-content: center;
+      align-items: center;
       flex-shrink: 0;
       background-color:inherit;
       border: 5px solid yellow;
       color:yellow;
       font-family:"Jersey 15", sans-serif;
-      font-size: xx-large;
-      text-align: center;
+      font-size: 60px;
       width: 100px;
       height: 100px;
     }
     .enemybar{
       background-color: red;
       height:30px;
+    }
+    #endscreen{
+      display:none;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      z-index: 2;
+      background-color:black;
+      color:rgb(0, 242, 255);
+      font-family:"Jersey 15", sans-serif;
+      font-size: 100px;
+      top:0;
+      right:0;
+      bottom:0;
+      left:0;
     }
   </style>
 </head>
@@ -83,13 +101,15 @@
       </div>
 
       <!--timer-->
-      <div class="timer">60</div>
+      <div class="timer" id="timer">60</div>
       <!--enemy-->
       <div style="position: relative; height:30px; width: 100%;">
         <div class="enemybar"></div>
         <div id="enemyhealth" style="position: absolute; background-color: blue; top:0; right:0; bottom:0; left:0;"></div>
       </div>
     </div>
+
+    <div id="endscreen">Tie</div>
     <canvas>
         
     </canvas>
