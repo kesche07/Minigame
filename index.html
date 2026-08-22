@@ -5,22 +5,64 @@
   <title>Small Minigame</title>
   <link rel="stylesheet" href="./style.css">
   <style>
+   @import url('https://fonts.googleapis.com/css2?family=Jersey+15&display=swap');
     .controls {
     display: flex;
     justify-content: space-between;
     width: 1024px;
     margin-top: 10px;
-}
+    }
+    button {
+        width: 60px;
+        height: 60px;
+        font-size: 20px;
+        font-weight: bold;
+        user-select: none; /* Prevents text selection while holding */
+        touch-action: manipulation; /* Prevents double-tap zoom on mobile */
+        cursor: pointer;
+    }
+    body{
+      background-color: aliceblue;
+    }
+    .container{
+      display:inline-block;
+      position:relative;
+      border: 5px solid red;
+    }
+    .healthbar{
+      display:flex;
+      align-items: center;
+      justify-content: center;
+      padding:20px 10px;
+      width: 100%;
+      position:absolute;
+      border:5px;
+      border-style: solid;
+      border-color:teal;
+      
+    }
+    .playerbar{
+      background-color: yellow;
+      height:30px;
+      width: 100%;
+    }
+    .timer{
+      flex-shrink: 0;
+      background-color:inherit;
+      border: 5px solid yellow;
+      color:yellow;
+      font-family:"Jersey 15", sans-serif;
+      font-size: xx-large;
+      text-align: center;
+      width: 100px;
+      height: 100px;
+    }
+    .enemybar{
+      background-color: yellow;
+      height:30px;
+      width: 100%;
 
-button {
-    width: 60px;
-    height: 60px;
-    font-size: 20px;
-    font-weight: bold;
-    user-select: none; /* Prevents text selection while holding */
-    touch-action: manipulation; /* Prevents double-tap zoom on mobile */
-    cursor: pointer;
-}
+    }
   </style>
 </head>
 <body>
@@ -33,9 +75,20 @@ button {
       <li><a href="#" onclick="resetGame()">Reset</a></li>
     </ul>
   </nav>
-  <canvas>
-    
-  </canvas>
+
+  <div class="container">
+    <div class="healthbar">
+      <!--player health-->
+      <div class="playerbar" ></div>
+      <!--timer-->
+      <div class="timer">60</div>
+      <!--enemy-->
+      <div class="enemybar"></div>
+    </div>
+    <canvas>
+        
+    </canvas>
+  </div>
 
   <div class="controls">
     <!-- Player Controls -->

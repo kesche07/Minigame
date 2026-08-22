@@ -297,19 +297,19 @@ function bindButton(buttonId, onPress, onRelease) {
 // Bind Player Buttons
 bindButton(
     'p-left',
-    () => { keys.a.pressed = true; lastKey = 'a' },
+    () => { keys.a.pressed = true; player.lastKey = 'a' },
     () => { keys.a.pressed = false }
 )
 
 bindButton(
     'p-right',
-    () => { keys.d.pressed = true; lastKey = 'd' },
+    () => { keys.d.pressed = true; player.lastKey = 'd' },
     () => { keys.d.pressed = false }
 )
 
 bindButton(
     'p-jump',
-    () => { if (player.velocity.y === 0) player.velocity.y = -10 }
+    () => { if (player.velocity.y === 0) player.velocity.y = -20 }
 )
 
 // Bind Enemy Buttons
@@ -327,5 +327,5 @@ bindButton(
 
 bindButton(
     'e-jump',
-    () => { if (enemy.velocity.y === 0) enemy.velocity.y = -10 }
+    () => { if (enemy.velocity.y === 0) enemy.velocity.y = -20 }
 )
