@@ -4,6 +4,82 @@
   <meta charset="UTF-8">
   <title>Small Minigame</title>
   <link rel="stylesheet" href="./style.css">
+  <style>
+   @import url('https://fonts.googleapis.com/css2?family=Jersey+15&display=swap');
+    .controls {
+    display: flex;
+    justify-content: space-between;
+    width: 1024px;
+    margin-top: 10px;
+    }
+    button {
+        width: 60px;
+        height: 60px;
+        font-size: 20px;
+        font-weight: bold;
+        user-select: none; /* Prevents text selection while holding */
+        touch-action: manipulation; /* Prevents double-tap zoom on mobile */
+        cursor: pointer;
+    }
+    body{
+      background-color: aliceblue;
+    }
+    .container{
+      display:inline-block;
+      position:relative;
+      border: 5px solid red;
+    }
+    .healthbar{
+      z-index: 3;
+      display:flex;
+      align-items: center;
+      justify-content: center;
+      padding:20px 10px;
+      width: 100%;
+      position:absolute;
+      border:5px;
+      border-style: solid;
+      border-color:teal;
+      
+    }
+    .playerbar{
+      background-color: red;
+      height:30px;
+      width: 100%;
+    }
+    .timer{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+      background-color:inherit;
+      border: 5px solid yellow;
+      color:yellow;
+      font-family:"Jersey 15", sans-serif;
+      font-size: 60px;
+      width: 100px;
+      height: 100px;
+    }
+    .enemybar{
+      background-color: red;
+      height:30px;
+    }
+    #endscreen{
+      display:none;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      z-index: 2;
+      background-color:black;
+      color:rgb(0, 242, 255);
+      font-family:"Jersey 15", sans-serif;
+      font-size: 100px;
+      top:0;
+      right:0;
+      bottom:0;
+      left:0;
+    }
+  </style>
 </head>
 <body>
   <!-- Navigation Bar -->
@@ -15,9 +91,45 @@
       <li><a href="#" onclick="resetGame()">Reset</a></li>
     </ul>
   </nav>
-  <canvas>
-    
-  </canvas>
+
+  <div class="container">
+    <div class="healthbar">
+      <!--player health-->
+      <div style="display:flex; justify-content: flex-end;  position:relative; height:30px; width: 100%;">
+        <div class="playerbar"></div>
+        <div id="playerhealth" style="position: absolute; background-color: yellow; top:0; right:0; bottom:0; width:100%"></div>
+      </div>
+
+      <!--timer-->
+      <div class="timer" id="timer">60</div>
+      <!--enemy-->
+      <div style="position: relative; height:30px; width: 100%;">
+        <div class="enemybar"></div>
+        <div id="enemyhealth" style="position: absolute; background-color: blue; top:0; right:0; bottom:0; left:0;"></div>
+      </div>
+    </div>
+
+    <div id="endscreen">Tie</div>
+    <canvas>
+        
+    </canvas>
+  </div>
+
+  <div class="controls">
+    <!-- Player Controls -->
+    <div>
+        <button id="p-left">A</button>
+        <button id="p-jump">W</button>
+        <button id="p-right">D</button>
+    </div>
+
+    <!-- Enemy Controls -->
+    <div>
+        <button id="e-left">←</button>
+        <button id="e-jump">↑</button>
+        <button id="e-right">→</button>
+    </div>
+</div>
   <script src="./game.js"></script>
 </body>
 </html>
