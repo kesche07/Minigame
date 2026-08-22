@@ -10,12 +10,27 @@ c.fillRect(0,0,canvas.width,canvas.height)
 
 const gravity =.7
 
+
+//Sprite creations
+
+//bg creation
 const background = new Sprite({
     position: {
         x:0,
         y:0
     },
-    imageSrc: './Assets/background.png'
+    imageSrc: './Assets/background.png',
+})
+
+//shop
+const shop = new Sprite({
+    position: {
+        x:640,
+        y:135
+    },
+    imageSrc: './Assets/shop.png',
+    scale:2.7,
+    framesMax:6
 })
 
 //player creation
@@ -95,7 +110,8 @@ function animate(){
     c.fillRect(0,0, canvas.width,canvas.height)
     
     background.update()
-    
+    shop.update()
+
     player.update()
     enemy.update()
 
