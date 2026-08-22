@@ -30,6 +30,7 @@ class Sprite {
             height: 50
         }
         this.isAttacking
+        this.health = 100
     }
 
     draw(){
@@ -175,7 +176,8 @@ function animate(){
         player.isAttacking)
         {
             player.isAttacking = false
-            console.log('player attack')
+            enemy.health -= 20
+            document.querySelector('#enemyhealth').style.width= enemy.health + '%'
         }
 
     //enemy attacking detection
@@ -185,7 +187,8 @@ function animate(){
         enemy.isAttacking)
         {
             enemy.isAttacking = false
-            console.log('enemy attack')
+            player.health -= 20
+            document.querySelector('#playerhealth').style.width= player.health + '%'
         }
     }
 

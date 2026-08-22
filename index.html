@@ -42,7 +42,7 @@
       
     }
     .playerbar{
-      background-color: yellow;
+      background-color: red;
       height:30px;
       width: 100%;
     }
@@ -58,10 +58,8 @@
       height: 100px;
     }
     .enemybar{
-      background-color: yellow;
+      background-color: red;
       height:30px;
-      width: 100%;
-
     }
   </style>
 </head>
@@ -79,11 +77,18 @@
   <div class="container">
     <div class="healthbar">
       <!--player health-->
-      <div class="playerbar" ></div>
+      <div style="display:flex; justify-content: flex-end;  position:relative; height:30px; width: 100%;">
+        <div class="playerbar"></div>
+        <div id="playerhealth" style="position: absolute; background-color: yellow; top:0; right:0; bottom:0; width:100%"></div>
+      </div>
+
       <!--timer-->
       <div class="timer">60</div>
       <!--enemy-->
-      <div class="enemybar"></div>
+      <div style="position: relative; height:30px; width: 100%;">
+        <div class="enemybar"></div>
+        <div id="enemyhealth" style="position: absolute; background-color: blue; top:0; right:0; bottom:0; left:0;"></div>
+      </div>
     </div>
     <canvas>
         
