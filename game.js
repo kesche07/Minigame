@@ -48,6 +48,13 @@ const player = new Fighter({
    offset: {
     x:0,
     y:0
+   },
+   imageSrc:'Assets/samuraiMack/Idle.png',
+   framesMax: 8,
+   scale:2.5,
+   offset: {
+    x: 215,
+    y:157
    }
 })
 
@@ -68,6 +75,13 @@ const enemy = new Fighter({
    offset: {
     x:-50,
     y:0
+   },
+   imageSrc:'Assets/kenji/Idle.png',
+   framesMax: 4,
+   scale:2.5,
+   offset: {
+    x: 215,
+    y:157
    }
 })
 enemy.draw()
@@ -113,7 +127,7 @@ function animate(){
     shop.update()
 
     player.update()
-    enemy.update()
+    //enemy.update()
 
     //player
     player.velocity.x = 0
