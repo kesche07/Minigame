@@ -105,7 +105,31 @@ const enemy = new Fighter({
    scale:2.5,
    offset: {
     x: 215,
-    y:157
+    y:170
+   },
+   sprites :{
+    idle:{
+        imageSrc:'Assets/kenji/Idle.png',
+        framesMax:4
+    },
+    run:{
+        imageSrc:'Assets/kenji/Run.png',
+        framesMax:8,
+    },
+    jump:{
+        imageSrc:'Assets/kenji/Jump.png',
+        framesMax:2,
+    }
+    ,
+    fall:{
+        imageSrc:'Assets/kenji/Fall.png',
+        framesMax:2,
+    }
+    ,
+    attack1:{
+        imageSrc:'Assets/kenji/Attack1.png',
+        framesMax:4,
+    }
    }
 })
 enemy.draw()
@@ -185,10 +209,27 @@ function animate(){
     
     if (keys.ArrowLeft.pressed && enemy.lastKey==='ArrowLeft'){
         enemy.velocity.x=-5
+        enemy.switchSprite('run')
+        
     }
     else if (keys.ArrowRight.pressed && enemy.lastKey==='ArrowRight'){
         enemy.velocity.x=5
+        enemy.switchSprite('run')
     }
+    else{
+        enemy.switchSprite('idle')
+    }
+
+    //falling
+    if(enemy.velocity.y <0){
+        enemy.switchSprite('jump')
+        
+    }
+    else if(enemy.velocity>0){
+        enemy.switchSprite('fall')
+    }
+
+    
     
     //if player is attacking detection
     if(rectangularCollision({
