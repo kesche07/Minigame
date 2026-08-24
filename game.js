@@ -127,7 +127,7 @@ function animate(){
     shop.update()
 
     player.update()
-    //enemy.update()
+    enemy.update()
 
     //player
     player.velocity.x = 0
