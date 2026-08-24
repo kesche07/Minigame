@@ -78,7 +78,19 @@ const player = new Fighter({
     attack1:{
         imageSrc:'Assets/samuraiMack/Attack1.png',
         framesMax:6,
+    },
+    takehit:{
+        imageSrc:'Assets/samuraiMack/Take Hit.png',
+        framesMax:4,
     }
+   },
+   hitbox:{
+        offset:{
+            x:0,
+            y:-30
+        },
+        width:260,
+        height:180
    }
 })
 
@@ -129,7 +141,19 @@ const enemy = new Fighter({
     attack1:{
         imageSrc:'Assets/kenji/Attack1.png',
         framesMax:4,
+    },
+    takehit:{
+        imageSrc:'Assets/kenji/Take hit.png',
+        framesMax:3,
     }
+   },
+   hitbox:{
+    offset:{
+        x:-175,
+        y:-30
+    },
+    width:225,
+    height:180
    }
 })
 enemy.draw()
@@ -165,6 +189,15 @@ const keys = {
 
 decreaseTimer()
 
+function rectangularCollision({ rectangle1, rectangle2 }) {
+return (
+rectangle1.hitbox.position.x + rectangle1.hitbox.width >= rectangle2.position.x &&
+rectangle1.hitbox.position.x <= rectangle2.position.x + rectangle2.width &&
+rectangle1.hitbox.position.y + rectangle1.hitbox.height >= rectangle2.position.y &&
+rectangle1.hitbox.position.y<= rectangle2.position.y + rectangle2.height
+)
+
+}
 //inf loop per frame for movement
 function animate(){
     window.requestAnimationFrame(animate)
@@ -231,26 +264,46 @@ function animate(){
 
     
     
-    //if player is attacking detection
+    //if player is attacking detection && hits enemy
     if(rectangularCollision({
         rectangle1:player,
-        rectangle2:enemy})&&
-        player.isAttacking)
+        rectangle2:enemy})
+        &&
+        player.isAttacking 
+        && 
+        player.frameCurrent === 4
+    )
         {
+            enemy.takeHit()
             player.isAttacking = false
-            enemy.health -= 20
             document.querySelector('#enemyhealth').style.width= enemy.health + '%'
+
+        }
+
+        //for missews
+        if (player.isAttacking && player.frameCurrent===4){
+            player.isAttacking =false
         }
 
     //enemy attacking detection
     if(rectangularCollision({
         rectangle1:enemy,
-        rectangle2:player})&&
-        enemy.isAttacking)
+        rectangle2:player})
+        &&
+        enemy.isAttacking 
+        && 
+        enemy.frameCurrent === 2
+    )
         {
+            player.takeHit()
             enemy.isAttacking = false
             player.health -= 20
-            document.querySelector('#playerhealth').style.width= player.health + '%'
+            document.querySelector('#playerhesalth').style.width= player.health + '%'
+        }
+
+        //for missew
+        if (enemy.isAttacking && enemy.frameCurrent===2){
+            enemy.isAttacking =false
         }
     
     //endgame based on health
