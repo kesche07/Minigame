@@ -1,3 +1,5 @@
+   @import url('https://fonts.googleapis.com/css2?family=Jersey+15&display=swap');
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -18,6 +20,7 @@ body {
 }
 /* Navigation Bar */
 .navbar {
+  font-family:"Jersey 15", sans-serif;
   width: 100%;
   background-color: #111;
   border-bottom: 2px solid #fff;
@@ -30,8 +33,14 @@ body {
   left: 0;
   z-index: 100;
 }
+.Home a{
+  text-decoration: none;
+  color:#ffff00;
+  margin-left:80px;
+}
 
 .nav-brand {
+  font-family: inherit;
   font-size: 20px;
   font-weight: bold;
   color: #ffff00;
