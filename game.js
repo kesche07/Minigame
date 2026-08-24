@@ -362,7 +362,10 @@ window.addEventListener('keydown', (event) =>{
                 break 
 
             case 'w':
-                player.velocity.y = -20
+                if (player.jumps < 2) {
+                    player.velocity.y = -20
+                    player.jumps++
+                }
                 break 
             
             case 's':
@@ -385,7 +388,10 @@ window.addEventListener('keydown', (event) =>{
             break 
 
         case 'ArrowUp':
-            enemy.velocity.y = -20
+            if (enemy.jumps < 2) {
+                enemy.velocity.y = -20
+                enemy.jumps++
+            }
             break 
         case 'ArrowDown':
             enemy.attack()
