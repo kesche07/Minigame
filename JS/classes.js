@@ -99,12 +99,13 @@ class Fighter extends Sprite{
         this.framesElapsed = 0
         this.framesHold = 15
 
+        this.jumps = 0
+
         for(const sprite in sprites){
             sprites[sprite].image = new Image()
             sprites[sprite].image.src = sprites[sprite].imageSrc
 
         }
-        console.log(this.sprites)
     }
 
     update(){
@@ -124,11 +125,11 @@ class Fighter extends Sprite{
         if(this.position.y +this.height +this.velocity.y >=  canvas.height - 96 ){
             this.velocity.y = 0
             this.position.y =330
+            this.jumps = 0
         }
         else{
             this.velocity.y += gravity
         }
-        console.log(this.position.y)
     }
 
     attack(){

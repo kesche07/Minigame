@@ -274,6 +274,19 @@ function animate(){
         enemy.switchSprite('fall')
     }
 
+    if (player.position.x < 0) {
+    player.position.x = 0
+} else if (player.position.x + player.width > canvas.width) {
+    player.position.x = canvas.width - player.width
+}
+
+// Clamp Enemy inside screen
+if (enemy.position.x < 0) {
+    enemy.position.x = 0
+} else if (enemy.position.x + enemy.width > canvas.width) {
+    enemy.position.x = canvas.width - enemy.width
+}
+
     
     
     //if player is attacking detection && hits enemy
@@ -310,7 +323,6 @@ function animate(){
         {
             player.takeHit()
             enemy.isAttacking = false
-            player.health -= 20
             document.querySelector('#playerhealth').style.width= player.health + '%'
         }
 
@@ -350,7 +362,10 @@ window.addEventListener('keydown', (event) =>{
                 break 
 
             case 'w':
-                player.velocity.y = -20
+                if (player.jumps < 2) {
+                    player.velocity.y = -20
+                    player.jumps++
+                }
                 break 
             
             case 's':
@@ -373,7 +388,10 @@ window.addEventListener('keydown', (event) =>{
             break 
 
         case 'ArrowUp':
-            enemy.velocity.y = -20
+            if (enemy.jumps < 2) {
+                enemy.velocity.y = -20
+                enemy.jumps++
+            }
             break 
         case 'ArrowDown':
             enemy.attack()
