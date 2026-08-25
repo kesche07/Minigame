@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Small Minigame</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+  @import url('https://fonts.googleapis.com/css2?family=Jersey+15&display=swap');
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0d0d0d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  font-family: sans-serif;
+  overflow-x: hidden;
+  padding: 5px;
+}
+
+/* Responsive Canvas Wrapper */
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 1024px;
+  aspect-ratio: 16 / 9;
+  margin: 5px auto;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  border: 2px solid white;
+  border-radius: 8px;
+  display: block;
+}
+
+/* Healthbar Overlay */
+.healthbar {
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  width: 100%;
+  position: absolute;
+  top: 0;
+}
+
+.playerbar, .enemybar {
+  background-color: red;
+  width: 100%;
+  height: 100%;
+}
+
+.timer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 3px solid yellow;
+  color: yellow;
+  font-family: "Jersey 15", sans-serif;
+  font-size: clamp(1.2rem, 4vw, 2.5rem);
+  width: clamp(35px, 8vw, 60px);
+  height: clamp(35px, 8vw, 60px);
+  margin: 0 6px;
+}
+
+#endscreen {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  z-index: 4;
+  color: rgb(0, 242, 255);
+  font-family: "Jersey 15", sans-serif;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+/* Responsive Touch Controls */
+.controls {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1024px;
+  padding: 0 4px;
+  margin-top: 5px;
+  gap: 10px;
+}
+
+.controls-group {
+  display: flex;
+  gap: 4px;
+  flex-wrap: nowrap;
+}
+
+button {
+  width: clamp(36px, 10vw, 50px);
+  height: clamp(36px, 10vw, 50px);
+  font-size: clamp(11px, 3vw, 16px);
+  font-weight: bold;
+  user-select: none;
+  touch-action: manipulation;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 2px solid #fff;
+  background: #222;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button:active {
+  background: #555;
+}
+
+@media (min-width: 1025px) and (hover: hover) {
+  .controls {
+    display: none;
+  }
+}
+</style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="Home"><a href="./../index.html"><h1>🏠︎</h1></a></div>
+    <div class="nav-brand">BATTLE ARENA</div>
+    <ul class="nav-links">
+      <li><a href="#arena">Game1 </a></li>
+      <li><a href="./game2.html">Game2 </a></li>
+      <li><a href="#" onclick="resetGame()">Reset</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="healthbar">
+      <!--player health-->
+      <div style="display:flex; justify-content: flex-end;  position:relative; height:30px; width: 100%;">
+        <div class="playerbar"></div>
+        <div id="playerhealth" style="position: absolute; background-color: yellow; top:0; right:0; bottom:0; width:100%"></div>
+      </div>
+
+      <!--timer-->
+      <div class="timer" id="timer">60</div>
+      <!--enemy-->
+      <div style="position: relative; height:30px; width: 100%;">
+        <div class="enemybar"></div>
+        <div id="enemyhealth" style="position: absolute; background-color: blue; top:0; right:0; bottom:0; left:0;"></div>
+      </div>
+    </div>
+
+    <div id="endscreen">Tie</div>
+    <canvas>
+        
+    </canvas>
+  </div>
+
+  <div class="controls">
+  <!-- Player Controls -->
+  <div class="controls-group">
+    <button id="p-left">A</button>
+    <button id="p-jump">W</button>
+    <button id="p-right">D</button>
+    <button id="p-attack" style="background-color: #a00;">ATK</button>
+  </div>
+
+  <!-- Enemy Controls -->
+  <div class="controls-group">
+    <button id="e-attack" style="background-color: #00a;">ATK</button>
+    <button id="e-left">←</button>
+    <button id="e-jump">↑</button>
+    <button id="e-right">→</button>
+  </div>
+</div>
+  <script src="./JS/utils.js"></script>
+  <script src="./JS/classes.js"></script>
+  <script src="./game.js"></script>
+</body>
+</html>
