@@ -502,3 +502,28 @@ bindButton(
     'e-attack',
     () => { if (!enemy.dead) enemy.attack() }
 )
+
+function resetGame(event) {
+  if (event) event.preventDefault();
+
+  // 1. Reset Health Bars
+  player.health = 100;
+  enemy.health = 100;
+  document.querySelector('#playerhealth').style.width = '100%';
+  document.querySelector('#enemyhealth').style.width = '100%';
+
+  // 2. Reset Player Positions
+  player.position = { x: 0, y: 0 };
+  enemy.position = { x: 400, y: 0 };
+
+  // 3. Reset Timer & Game Over State
+  clearTimeout(timerId); // Stop existing timer loop if running
+  timer = 60;
+  document.querySelector('#timer').innerHTML = timer;
+  decreaseTimer();
+
+  // 4. Hide Winner Display Text
+  const displayText = document.querySelector('#displayText');
+  displayText.style.display = 'none';
+  displayText.innerHTML = '';
+}
