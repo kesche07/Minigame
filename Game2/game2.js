@@ -61,9 +61,7 @@ function updateHpUI(){
 
 }
 
-function takeDamage(amount){
 
-}
 
 //changes game variables
 function update(){
@@ -74,6 +72,13 @@ function update(){
     targetBar.x += targetBar.speed;
     if (targetBar.x > canvas.width) {
         executeAttack();
+    }
+  }
+
+  if(gameState === 'ENEMY_TURN'){
+    for(let i = bullets.length -1 ; i>=0 ; i--){
+      b.x += b.vx;
+      b.y += b.vy;
     }
   }
 }
@@ -108,7 +113,11 @@ function showTextMessage(msg){
   },2000);
 }
 
-//for player attacks
+//for attacks
+function takeDamage(amount){
+
+}
+
 function executeAttack(){
   if(gameState !== 'ATTACK_TARGET') return;
 
@@ -121,6 +130,18 @@ function executeAttack(){
   enemy.hp = Math.max(
     0,
     enemy.hp - lastHitDamage);
+
+  showEnemyHpBar = true;
+  setTimeout(() => {
+    showEnemyHpBar = false;
+    lastHitDamage = null;
+  },1500)
+
+  if (enemy.hp <= 0) {
+    triggerVictory(false);
+} else {
+    startEnemyTurn();
+}
 }
 
 //damage zones
@@ -142,6 +163,32 @@ function calculateDamage(barX){
     // 15-22
     Math.floor(15 + Math.random() * 8)
   }
+}
+
+//enemy turn to attack
+function startEnemyTurn(){
+  gameState = 'ENEMY_TURN';
+
+  //moves soul to center
+  soul.x = canvas.width /2;
+  soul.y = canvas.height/2;
+
+  //clears pprev projectiles
+  bullets = [];
+
+  const spawner = setInterval(() => {
+    if (gameState === 'ENEMY_TURN') spawnBullet();
+}, 300);
+}
+
+function spawnBullet(){
+  bullets.push({
+    x: Math.random() * (canvas.width - 20) + 10,
+    y:0,
+    vx: (Math.random() - 0.5) *2,
+    vy: 2 + Math.random() *2,
+    radius : 5
+  })
 }
 
 //keybnoard mandler
@@ -207,6 +254,7 @@ function draw(){
       );
   }
   else if(gameState === 'ENEMY_TURN'){
+
 
   }
   else if(gameState === 'TEXT_DISPLAY'){
