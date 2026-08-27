@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Undertale Battle System</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      background-color: #5b5b5b;
+      color: #ffffff;
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    #game-container{
+        background-color: #1e1e1e;
+    }
+    
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    
+    <!-- ENEMY DISPLAY AREA -->
+    <div id="enemy-area">
+      <!--<div id="enemy-hp-container" class="hidden">
+        <div id="damage-text">0</div>
+        <div id="enemy-hp-bar">
+          <div id="enemy-hp-fill"></div>
+        </div>
+      </div>
+
+      <!-ptional visual image element for enemy 
+      <img id="enemy-sprite" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%2300ff00'/></svg>" alt="Enemy Sprite">
+      -->
+      <div id="dialogue-bubble">Ribbit, ribbit...</div>
+    </div>
+
+    <!-- MAIN BATTLE CANVAS AREA -->
+    <canvas id="arena" ></canvas>
+
+    <!-- PLAYER STATS / HUD -->
+    <div id="player-hud">
+      <div id="player-name">FRISK &nbsp; LV 1</div>
+      <div id="hp-bar-container">
+        <span>HP</span>
+        <div id="hp-bar-background">
+          <div id="hp-bar-fill"></div>
+        </div>
+        <span id="hp-text">20 / 20</span>
+      </div>
+    </div>
+
+    <!-- MAIN MENU ACTION BUTTONS -->
+    <div id="action-buttons">
+      <button id="btn-fight" class="btn">FIGHT</button>
+      <button id="btn-act" class="btn">ACT</button>
+      <button id="btn-item" class="btn">ITEM</button>
+      <button id="btn-mercy" class="btn">MERCY</button>
+    </div>
+
+    <!-- GAME OVER SCREEN OVERLAY -->
+    <div id="game-over-screen" class="hidden">
+      <h1>GAME OVER</h1>
+      <button onclick="resetGame()">RETRY</button>
+    </div>
+
+  </div>
+
+  <!-- SCRIPT IMPORT -->
+   <script src="./../JS/classes.js"></script>
+  <script src="./game2.js"></script>
+</body>
+</html>

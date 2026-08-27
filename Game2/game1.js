@@ -2,26 +2,32 @@ const canvas = document.getElementById('arena');
 const ctx = canvas.getContext('2d');
 
 // --- Game State ---
-// States: 'MENU', 'ITEM_MENU', 'ATTACK_TARGET', 'ATTACK_ANIMATION', 'ENEMY_TURN', 'VICTORY', 'GAME_OVER'
 let gameState = 'MENU'; 
+let menuState = 'MAIN';
+let textMessage = '';
+let textTimeout = null;
+
 let hp = 20;
 const maxHp = 20;
+let spareable = false;
+let selectedItemIndex = 0;
+
+// Dynamic Hit Tracking
+let lastHitDamage = null;
+let showEnemyHpBar = false;
+
+// Player Inventory
+let inventory = [
+  { name: 'Monster Candy', heal: 10 },
+  { name: 'Spider Donut', heal: 12 }
+];
 
 // --- Enemy Stats ---
 const enemy = {
   name: 'Froggit',
   hp: 30,
-  maxHp: 30,
-  canBeSpared: false // Refuses spare by default
+  maxHp: 30
 };
-
-// --- Inventory System ---
-let selectedItemIndex = 0;
-const inventory = [
-  { name: 'Monster Candy', heal: 10 },
-  { name: 'Spider Donut', heal: 12 },
-  { name: 'Butterscotch Pie', heal: 20 }
-];
 
 // --- Attack Mechanics ---
 const targetBar = {
@@ -41,26 +47,36 @@ const soul = {
 
 // --- Input Tracking ---
 const keys = {};
+
 window.addEventListener('keydown', (e) => {
-  if (['Space', 'Enter', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+  if (['Space', 'Enter', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyX'].includes(e.code)) {
     e.preventDefault();
   }
 
-  // Action on Attack Bar
-  if ((e.key === ' ' || e.key === 'Enter') && gameState === 'ATTACK_TARGET') {
-    executeAttack();
+  if (gameState === 'MENU' && menuState === 'ITEM' && inventory.length > 0) {
+    if (e.key === 'ArrowUp' || e.key === 'w') {
+      selectedItemIndex = (selectedItemIndex - 1 + inventory.length) % inventory.length;
+    }
+    if (e.key === 'ArrowDown' || e.key === 's') {
+      selectedItemIndex = (selectedItemIndex + 1) % inventory.length;
+    }
   }
 
-  // Navigation & Selection inside ITEM sub-menu
-  if (gameState === 'ITEM_MENU') {
-    if (e.key === 'ArrowDown') {
-      selectedItemIndex = (selectedItemIndex + 1) % inventory.length;
-    } else if (e.key === 'ArrowUp') {
-      selectedItemIndex = (selectedItemIndex - 1 + inventory.length) % inventory.length;
-    } else if (e.key === ' ' || e.key === 'Enter') {
-      useItem(selectedItemIndex);
-    } else if (e.key === 'Escape' || e.key === 'x') {
-      gameState = 'MENU';
+  if (e.key === 'x' || e.key === 'X') {
+    if (gameState === 'MENU' && menuState !== 'MAIN') {
+      menuState = 'MAIN';
+      selectedItemIndex = 0;
+    }
+  }
+
+  if (e.key === ' ' || e.key === 'Enter') {
+    if (gameState === 'ATTACK_TARGET') {
+      executeAttack();
+    } else if (gameState === 'MENU' && menuState !== 'MAIN') {
+      handleMenuSelection();
+    } else if (gameState === 'TEXT_DISPLAY') {
+      if (textTimeout) clearTimeout(textTimeout);
+      startEnemyTurn();
     }
   }
 
@@ -82,122 +98,122 @@ function spawnBullet() {
   });
 }
 
-// --- BUTTON LISTENERS ---
-
-// 1. FIGHT Button
+// --- MENU BUTTON LISTENERS ---
 document.getElementById('btn-fight').addEventListener('click', () => {
-  if (gameState === 'MENU') {
+  if (gameState === 'MENU' && menuState === 'MAIN') {
     gameState = 'ATTACK_TARGET';
     targetBar.x = 0;
   }
 });
 
-// 2. ITEM Button
+document.getElementById('btn-act').addEventListener('click', () => {
+  if (gameState === 'MENU' && menuState === 'MAIN') {
+    menuState = 'ACT';
+  }
+});
+
 document.getElementById('btn-item').addEventListener('click', () => {
-  if (gameState === 'MENU') {
-    gameState = 'ITEM_MENU';
+  if (gameState === 'MENU' && menuState === 'MAIN') {
+    menuState = 'ITEM';
     selectedItemIndex = 0;
   }
 });
 
-// 3. MERCY Button (Refusal Logic)
 document.getElementById('btn-mercy').addEventListener('click', () => {
-  if (gameState === 'MENU') {
-    executeMercy();
+  if (gameState === 'MENU' && menuState === 'MAIN') {
+    menuState = 'MERCY';
   }
 });
 
-// --- ACTION LOGIC ---
+function handleMenuSelection() {
+  if (menuState === 'ACT') {
+    spareable = true;
+    showTextMessage("* You told Froggit a compliment.\n  It didn't understand, but was flattered.");
+  } 
+  else if (menuState === 'ITEM') {
+    if (inventory.length > 0) {
+      const item = inventory.splice(selectedItemIndex, 1)[0];
+      hp = Math.min(maxHp, hp + item.heal);
+      takeDamage(0);
 
-// Item Consumption
-function useItem(index) {
-  if (inventory.length === 0) return;
+      if (selectedItemIndex >= inventory.length && inventory.length > 0) {
+        selectedItemIndex = inventory.length - 1;
+      }
 
-  const item = inventory[index];
-  const oldHp = hp;
-  hp = Math.min(maxHp, hp + item.heal);
-  const healedAmount = hp - oldHp;
-
-  // Update UI
-  document.getElementById('hp-bar-fill').style.width = `${(hp / maxHp) * 100}%`;
-  document.getElementById('hp-text').innerText = `${hp} / ${maxHp}`;
-
-  inventory.splice(index, 1);
-
-  // Show action message, then proceed to enemy turn
-  gameState = 'ATTACK_ANIMATION';
-  renderMessage(`* You ate the ${item.name}.`, `* Recovered ${healedAmount} HP!`);
-
-  setTimeout(() => {
-    startEnemyTurn();
-  }, 1500);
-}
-
-// Mercy Attempt
-function executeMercy() {
-  if (enemy.canBeSpared) {
-    triggerVictory();
-  } else {
-    gameState = 'ATTACK_ANIMATION';
-    const dialogue = document.getElementById('dialogue-bubble');
-    if (dialogue) dialogue.innerText = "No way!";
-
-    renderMessage(`* You tried to Spare ${enemy.name}.`, `* But its name was not in YELLOW...`);
-
-    setTimeout(() => {
-      startEnemyTurn();
-    }, 1500);
+      showTextMessage(`* You ate the ${item.name}.\n  You recovered ${item.heal} HP!`);
+    } else {
+      showTextMessage("* Your inventory is empty!");
+    }
+  } 
+  else if (menuState === 'MERCY') {
+    if (spareable) {
+      triggerVictory(true);
+    } else {
+      showTextMessage("* Froggit's name is not yellow yet!");
+    }
   }
 }
 
-// Attack Execution
-function executeAttack() {
-  gameState = 'ATTACK_ANIMATION';
+function showTextMessage(msg) {
+  gameState = 'TEXT_DISPLAY';
+  textMessage = msg;
+  menuState = 'MAIN';
 
+  if (textTimeout) clearTimeout(textTimeout);
+
+  textTimeout = setTimeout(() => {
+    if (gameState === 'TEXT_DISPLAY') {
+      startEnemyTurn();
+    }
+  }, 2500);
+}
+
+// --- CALCULATE DAMAGE BASED ON DISTANCE TO CENTER ---
+function calculateDamage(barX) {
   const center = canvas.width / 2;
-  const distanceFromCenter = Math.abs(targetBar.x - center);
+  const distanceFromCenter = Math.abs(barX - center);
   const maxDistance = canvas.width / 2;
 
-  let accuracy = Math.max(0, 1 - (distanceFromCenter / maxDistance));
-  let damage = Math.floor(accuracy * 15);
-  if (distanceFromCenter < 15) damage = 20;
-
-  enemy.hp = Math.max(0, enemy.hp - damage);
-
-  const hpContainer = document.getElementById('enemy-hp-container');
-  const hpFill = document.getElementById('enemy-hp-fill');
-  const damageText = document.getElementById('damage-text');
-
-  if (hpContainer && hpFill && damageText) {
-    hpContainer.classList.remove('hidden');
-    damageText.innerText = damage > 0 ? damage : 'MISS';
-    hpFill.style.width = `${(enemy.hp / enemy.maxHp) * 100}%`;
+  // Outer zone: Miss or weak hit (1-5 damage)
+  if (distanceFromCenter > maxDistance * 0.6) {
+    return Math.floor(Math.random() * 5); // 0 to 4
+  } 
+  // Mid zone: Medium hit (6-14 damage)
+  else if (distanceFromCenter > 20) {
+    return Math.floor(6 + Math.random() * 9); // 6 to 14
+  } 
+  // Perfect center: High critical damage (15-22 damage)
+  else {
+    return Math.floor(15 + Math.random() * 8); // 15 to 22
   }
+}
 
+// --- UPDATED ATTACK EXECUTION WITH CANVAS HP BAR ---
+function executeAttack() {
+  if (gameState !== 'ATTACK_TARGET') return;
+  
+  gameState = 'ATTACK_ANIMATION';
+  lastHitDamage = calculateDamage(targetBar.x);
+  enemy.hp = Math.max(0, enemy.hp - lastHitDamage);
+  showEnemyHpBar = true;
+
+  // Keep HP bar and damage text visible on canvas for 1.5 seconds
   setTimeout(() => {
-    if (hpContainer) hpContainer.classList.add('hidden');
+    showEnemyHpBar = false;
+    lastHitDamage = null;
 
     if (enemy.hp <= 0) {
-      triggerVictory();
+      triggerVictory(false);
     } else {
       startEnemyTurn();
     }
   }, 1500);
 }
 
-// Helper to draw text box messages during transitions
-function renderMessage(line1, line2 = '') {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#fff';
-  ctx.font = '20px Courier New';
-  ctx.fillText(line1, 30, 50);
-  if (line2) ctx.fillText(line2, 30, 80);
-}
-
-// --- ENEMY TURN & FLOW CONTROL ---
-
 function startEnemyTurn() {
+  if (textTimeout) clearTimeout(textTimeout);
   gameState = 'ENEMY_TURN';
+  menuState = 'MAIN';
   soul.x = canvas.width / 2;
   soul.y = canvas.height / 2;
   bullets = [];
@@ -209,7 +225,9 @@ function startEnemyTurn() {
   setTimeout(() => {
     clearInterval(spawner);
     bullets = [];
-    if (gameState === 'ENEMY_TURN') gameState = 'MENU';
+    if (gameState === 'ENEMY_TURN') {
+      gameState = 'MENU';
+    }
   }, 6000);
 }
 
@@ -229,8 +247,11 @@ function checkCollision(bullet, soul) {
 
 function takeDamage(amount) {
   hp = Math.max(0, hp - amount);
-  document.getElementById('hp-bar-fill').style.width = `${(hp / maxHp) * 100}%`;
-  document.getElementById('hp-text').innerText = `${hp} / ${maxHp}`;
+  const hpFill = document.getElementById('hp-bar-fill');
+  const hpText = document.getElementById('hp-text');
+  
+  if (hpFill) hpFill.style.width = `${(hp / maxHp) * 100}%`;
+  if (hpText) hpText.innerText = `${hp} / ${maxHp}`;
 
   if (hp <= 0 && gameState !== 'GAME_OVER') {
     triggerGameOver();
@@ -240,48 +261,70 @@ function takeDamage(amount) {
 function triggerGameOver() {
   gameState = 'GAME_OVER';
   bullets = [];
+  if (textTimeout) clearTimeout(textTimeout);
+
   const gameOverScreen = document.getElementById('game-over-screen');
   if (gameOverScreen) gameOverScreen.classList.remove('hidden');
 }
 
-function triggerVictory() {
+function triggerVictory(spared = false) {
   gameState = 'VICTORY';
+  if (textTimeout) clearTimeout(textTimeout);
+  
   const enemySprite = document.getElementById('enemy-sprite');
   const dialogue = document.getElementById('dialogue-bubble');
-
-  if (enemySprite) enemySprite.classList.add('enemy-dead');
-  if (dialogue) dialogue.innerText = "GWAH...";
-
-  setTimeout(() => {
-    if (dialogue) dialogue.style.display = 'none';
-  }, 1500);
+  
+  if (enemySprite) {
+    if (spared) enemySprite.style.opacity = '0.5';
+    else enemySprite.classList.add('enemy-dead');
+  }
+  
+  if (dialogue) {
+    dialogue.innerText = spared ? "Ribbit (Thank you!)" : "GWAH...";
+    setTimeout(() => { dialogue.style.display = 'none'; }, 1500);
+  }
 }
 
 function resetGame() {
+  if (textTimeout) clearTimeout(textTimeout);
   hp = maxHp;
   enemy.hp = enemy.maxHp;
+  spareable = false;
+  selectedItemIndex = 0;
+  showEnemyHpBar = false;
+  lastHitDamage = null;
+  
+  inventory = [
+    { name: 'Monster Candy', heal: 10 },
+    { name: 'Spider Donut', heal: 12 }
+  ];
+  
   takeDamage(0);
-
-  document.getElementById('enemy-hp-fill').style.width = '100%';
+  
   const gameOverScreen = document.getElementById('game-over-screen');
-  if (gameOverScreen) gameOverScreen.classList.add('hidden');
-
   const enemySprite = document.getElementById('enemy-sprite');
   const dialogue = document.getElementById('dialogue-bubble');
-  if (enemySprite) enemySprite.classList.remove('enemy-dead');
+  
+  if (gameOverScreen) gameOverScreen.classList.add('hidden');
+  
+  if (enemySprite) {
+    enemySprite.classList.remove('enemy-dead');
+    enemySprite.style.opacity = '1';
+  }
+  
   if (dialogue) {
     dialogue.style.display = 'block';
     dialogue.innerText = "Ribbit, ribbit...";
   }
 
   gameState = 'MENU';
+  menuState = 'MAIN';
 }
-
-// --- UPDATE & RENDER LOOPS ---
 
 function update() {
   if (gameState === 'ATTACK_TARGET') {
     targetBar.x += targetBar.speed;
+
     if (targetBar.x > canvas.width) {
       executeAttack();
     }
@@ -314,35 +357,65 @@ function update() {
   }
 }
 
+// --- RENDERING ROUTINE WITH ENEMY HP DISPLAY ---
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (gameState === 'MENU') {
-    ctx.fillStyle = '#fff';
-    ctx.font = '20px Courier New';
-    ctx.fillText(`* ${enemy.name} draws near!`, 30, 50);
-
-  } else if (gameState === 'ITEM_MENU') {
     ctx.font = '20px Courier New';
 
-    if (inventory.length === 0) {
+    if (menuState === 'MAIN') {
       ctx.fillStyle = '#fff';
-      ctx.fillText('* Inventory is empty!', 30, 50);
-    } else {
-      inventory.forEach((item, index) => {
-        const yPos = 50 + index * 30;
-        if (index === selectedItemIndex) {
-          ctx.fillStyle = 'red';
-          ctx.fillText('♥', 30, yPos);
-          ctx.fillStyle = '#ffff00';
-        } else {
-          ctx.fillStyle = '#ffffff';
-        }
-        ctx.fillText(`* ${item.name}`, 55, yPos);
-      });
+      ctx.fillText(`* ${enemy.name} draws near!`, 30, 50);
+    } 
+    else if (menuState === 'ACT') {
+      ctx.fillStyle = '#fff';
+      ctx.fillText('* Flatter', 50, 50);
+      ctx.font = '14px Courier New';
+      ctx.fillText('[ Press Space / Enter to Select, X to Cancel ]', 50, 115);
+    } 
+    else if (menuState === 'ITEM') {
+      if (inventory.length > 0) {
+        inventory.forEach((item, index) => {
+          const yPos = 50 + (index * 30);
+
+          if (index === selectedItemIndex) {
+            ctx.fillStyle = soul.color;
+            ctx.fillRect(30, yPos - 12, soul.size, soul.size);
+            ctx.fillStyle = '#ffff00';
+          } else {
+            ctx.fillStyle = '#ffffff';
+          }
+
+          ctx.font = '20px Courier New';
+          ctx.fillText(`* ${item.name}`, 50, yPos);
+        });
+      } else {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('* Empty', 50, 50);
+      }
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '14px Courier New';
+      ctx.fillText('[ Up/Down: Select | Space: Eat | X: Cancel ]', 50, 120);
+    } 
+    else if (menuState === 'MERCY') {
+      ctx.fillStyle = spareable ? '#ffff00' : '#ffffff';
+      ctx.fillText('* Spare', 50, 50);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '14px Courier New';
+      ctx.fillText('[ Press Space / Enter to Spare, X to Cancel ]', 50, 115);
     }
 
-  } else if (gameState === 'ATTACK_TARGET') {
+  } else if (gameState === 'TEXT_DISPLAY') {
+    ctx.fillStyle = '#fff';
+    ctx.font = '20px Courier New';
+    
+    const lines = textMessage.split('\n');
+    lines.forEach((line, index) => {
+      ctx.fillText(line, 30, 50 + (index * 25));
+    });
+
+  } else if (gameState === 'ATTACK_TARGET' || gameState === 'ATTACK_ANIMATION') {
     ctx.strokeStyle = '#00ff00';
     ctx.lineWidth = 4;
     ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
@@ -352,6 +425,29 @@ function draw() {
 
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(targetBar.x - targetBar.width / 2, 12, targetBar.width, canvas.height - 24);
+
+    // Render Enemy HP Bar and Damage Overlay directly on Canvas
+    if (showEnemyHpBar) {
+      const barWidth = 200;
+      const barHeight = 16;
+      const barX = (canvas.width - barWidth) / 2;
+      const barY = 40;
+
+      // Background Bar (Red)
+      ctx.fillStyle = '#ff0000';
+      ctx.fillRect(barX, barY, barWidth, barHeight);
+
+      // Remaining HP (Green)
+      const currentBarWidth = (enemy.hp / enemy.maxHp) * barWidth;
+      ctx.fillStyle = '#00ff00';
+      ctx.fillRect(barX, barY, currentBarWidth, barHeight);
+
+      // Damage Text Output
+      ctx.fillStyle = '#ff0000';
+      ctx.font = 'bold 22px Courier New';
+      const displayText = lastHitDamage > 0 ? `${lastHitDamage}` : 'MISS';
+      ctx.fillText(displayText, canvas.width / 2 - 15, barY - 10);
+    }
 
   } else if (gameState === 'ENEMY_TURN') {
     ctx.fillStyle = soul.color;

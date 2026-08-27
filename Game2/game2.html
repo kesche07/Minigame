@@ -2,76 +2,269 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Undertale Battle Engine</title>
-  <link rel="stylesheet" href="./../style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Undertale Battle System</title>
   <style>
-    body{
-      background-color: aliceblue;
+    * {
+      box-sizing: border-box;
+      user-select: none;
     }
-    #battle-container{
-      background-color: rgb(34, 36, 38);
+
+    body {
+      background-color: #000000;
+      color: #ffffff;
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    #game-container {
+      width: 640px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Enemy Area */
+    #enemy-area {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      margin-bottom: 10px;
+    }
+
+    #enemy-sprite {
+      width: 120px;
+      height: 120px;
+      transition: opacity 1.5s ease;
+    }
+
+    .enemy-dead {
+      opacity: 0;
+    }
+
+    #dialogue-bubble {
+      position: absolute;
+      top: 20px;
+      right: 120px;
+      background-color: #ffffff;
+      color: #000000;
+      border: 3px solid #000000;
+      border-radius: 10px;
+      padding: 10px 15px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    #dialogue-bubble::after {
+      content: '';
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 6px 10px 6px 0;
+      border-style: solid;
+      border-color: transparent #ffffff transparent transparent;
+    }
+
+    /* Enemy HP Bar (Shows on Hit) */
+    #enemy-hp-container {
+      position: absolute;
+      top: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #damage-text {
+      color: #ff0000;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    #enemy-hp-bar {
+      width: 120px;
+      height: 12px;
+      background-color: #c30000;
+      border: 1px solid #000000;
+    }
+
+    #enemy-hp-fill {
+      width: 100%;
+      height: 100%;
+      background-color: #00ff00;
+      transition: width 0.2s ease;
+    }
+
+    /* Main Battle Canvas */
+    #arena {
+      background-color: #000000;
+      border: 5px solid #ffffff;
+      display: block;
+    }
+
+    /* Player HUD & Stats */
+    #player-hud {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 15px 0;
+      padding: 0 10px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    #hp-bar-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #hp-bar-background {
+      width: 120px;
+      height: 20px;
+      background-color: #c30000;
+    }
+
+    #hp-bar-fill {
+      width: 100%;
+      height: 100%;
+      background-color: #ffff00;
+      transition: width 0.2s ease;
+    }
+
+    /* Action Buttons Bar */
+    #action-buttons {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px 0;
+      background-color: #000000;
+      border: 3px solid #ff7f00;
+      color: #ff7f00;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      color: #ffff00;
+      border-color: #ffff00;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Game Over Overlay Screen */
+    #game-over-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    #game-over-screen h1 {
+      color: #ff0000;
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    #game-over-screen button {
+      padding: 10px 20px;
+      font-size: 18px;
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #000;
+      color: #fff;
+      border: 2px solid #fff;
+      cursor: pointer;
+    }
+
+    #game-over-screen button:hover {
+      background-color: #fff;
+      color: #000;
+    }
+
+    /* Utility */
+    .hidden {
+      display: none !important;
     }
   </style>
 </head>
 <body>
-    <nav class="navbar">
-    <div class="Home"><a href="./../index.html"><h1>🏠︎</h1></a></div>
-    <div class="nav-brand">FROGGIT BATTLE</div>
-    <ul class="nav-links">
-      <li><a href="./../Game1/game.html">Game1 </a></li>
-      
 
-      <li><a href="#arena">Game2 </a></li>
-      <li><a href="#" onclick="resetGame()">Reset</a></li>
-    </ul>
-  </nav>
-
-
-  <div id="battle-container" style="position: relative;">
-    <!-- Game Over Screen (Hidden by default) -->
-    <div id="game-over-screen" class="hidden">
-      <h1>GAME OVER</h1>
-      <p>Stay determined...</p>
-      <button class="restart-btn" onclick="resetGame()">TRY AGAIN</button>
-    </div>
-
-    <!-- Enemy Visual Area -->
+  <div id="game-container">
+    
+    <!-- ENEMY DISPLAY AREA -->
     <div id="enemy-area">
-      <!-- Enemy HP Display -->
-      <div id="enemy-hp-container" class="hidden">
-        <div id="enemy-hp-bg">
+      <!--<div id="enemy-hp-container" class="hidden">
+        <div id="damage-text">0</div>
+        <div id="enemy-hp-bar">
           <div id="enemy-hp-fill"></div>
         </div>
-        <div id="damage-text"></div>
       </div>
 
-      <div id="enemy-sprite">👻</div>
+      <!-- Optional visual image element for enemy -->
+      <img id="enemy-sprite" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%2300ff00'/></svg>" alt="Enemy Sprite">
+      
       <div id="dialogue-bubble">Ribbit, ribbit...</div>
     </div>
 
-    <!-- Arena Box -->
-    <canvas id="arena" width="540" height="140"></canvas>
+    <!-- MAIN BATTLE CANVAS AREA -->
+    <canvas id="arena" width="580" height="180"></canvas>
 
-    <!-- Player Stats Bar -->
-    <div id="stats-bar">
-      <span>CHARA</span>
-      <span>LV 1</span>
-      <div id="hp-container">
+    <!-- PLAYER STATS / HUD -->
+    <div id="player-hud">
+      <div id="player-name">FRISK &nbsp; LV 1</div>
+      <div id="hp-bar-container">
         <span>HP</span>
-        <div id="hp-bar-bg"><div id="hp-bar-fill"></div></div>
+        <div id="hp-bar-background">
+          <div id="hp-bar-fill"></div>
+        </div>
         <span id="hp-text">20 / 20</span>
       </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div id="menu-buttons">
-      <button class="btn active" id="btn-fight">FIGHT</button>
-      <button class="btn" id="btn-item">ITEM</button>
-      <button class="btn" id="btn-mercy">MERCY</button>
+    <!-- MAIN MENU ACTION BUTTONS -->
+    <div id="action-buttons">
+      <button id="btn-fight" class="btn">FIGHT</button>
+      <button id="btn-act" class="btn">ACT</button>
+      <button id="btn-item" class="btn">ITEM</button>
+      <button id="btn-mercy" class="btn">MERCY</button>
     </div>
+
+    <!-- GAME OVER SCREEN OVERLAY -->
+    <div id="game-over-screen" class="hidden">
+      <h1>GAME OVER</h1>
+      <button onclick="resetGame()">RETRY</button>
+    </div>
+
   </div>
 
+  <!-- SCRIPT IMPORT -->
   <script src="./game1.js"></script>
-  <script src="./../JS/classes.js"></script>
 </body>
 </html>

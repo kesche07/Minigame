@@ -1,14 +1,14 @@
-const canvas = document.querySelector('canvas')
-const c = canvas.getContext('2d')
+const canvas = document.querySelector('canvas');
+const c = canvas.getContext('2d');
 
 //game screen size 16:9 ratio
-canvas.width = 1024
-canvas.height = 576
+canvas.width = 1024;
+canvas.height = 576;
 
 //creates background or working space
-c.fillRect(0,0,canvas.width,canvas.height)
+c.fillRect(0,0,canvas.width,canvas.height);
 
-const gravity =.5
+const gravity =.5;
 
 
 //Sprite creations
@@ -20,7 +20,7 @@ const background = new Sprite({
         y:0
     },
     imageSrc: './../Assets/background.png',
-})
+});
 
 //shop
 const shop = new Sprite({
@@ -31,7 +31,7 @@ const shop = new Sprite({
     imageSrc: './../Assets/shop.png',
     scale:2.7,
     framesMax:6
-})
+});
 
 //player creation
 const player = new Fighter({
@@ -96,7 +96,7 @@ const player = new Fighter({
         width:260,
         height:180
    }
-})
+});
 
 
 
@@ -164,8 +164,8 @@ const enemy = new Fighter({
     width:225,
     height:180
    }
-})
-enemy.draw()
+});
+enemy.draw();
 
 const keys = {
     a:
@@ -193,10 +193,10 @@ const keys = {
        pressed:false 
     }
 
-}
+};
 
 
-decreaseTimer()
+decreaseTimer();
 
 function rectangularCollision({ rectangle1, rectangle2 }) {
 return (
@@ -204,87 +204,87 @@ rectangle1.hitbox.position.x + rectangle1.hitbox.width >= rectangle2.position.x 
 rectangle1.hitbox.position.x <= rectangle2.position.x + rectangle2.width &&
 rectangle1.hitbox.position.y + rectangle1.hitbox.height >= rectangle2.position.y &&
 rectangle1.hitbox.position.y<= rectangle2.position.y + rectangle2.height
-)
+);
 
 }
 //inf loop per frame for movement
 function animate(){
-    window.requestAnimationFrame(animate)
-    c.fillStyle = 'black'
-    c.fillRect(0,0, canvas.width,canvas.height)
+    window.requestAnimationFrame(animate);
+    c.fillStyle = 'black';
+    c.fillRect(0,0, canvas.width,canvas.height);
     
-    background.update()
-    shop.update()
+    background.update();
+    shop.update();
 
-    c.fillStyle= 'rgba(255,255,255,0.1)'
-    c.fillRect(0,0,canvas.width,canvas.height)
+    c.fillStyle= 'rgba(255,255,255,0.1)';
+    c.fillRect(0,0,canvas.width,canvas.height);
 
-    player.update()
-    enemy.update()
+    player.update();
+    enemy.update();
 
     //player
-    player.velocity.x = 0
+    player.velocity.x = 0;
 
 
     //left right movements
     if (keys.a.pressed && player.lastKey==='a'){
-        player.velocity.x=-5
-        player.switchSprite('run')
+        player.velocity.x=-5;
+        player.switchSprite('run');
         
     }
     else if (keys.d.pressed && player.lastKey==='d'){
-        player.velocity.x=5
-        player.switchSprite('run')
+        player.velocity.x=5;
+        player.switchSprite('run');
     }
     else{
-        player.switchSprite('idle')
+        player.switchSprite('idle');
     }
     
     //falling
     if(player.velocity.y <0){
-        player.switchSprite('jump')
+        player.switchSprite('jump');
         
     }
     else if(player.velocity>0){
-        player.switchSprite('fall')
+        player.switchSprite('fall');
     }
 
     //enemy
     enemy.velocity.x = 0
     
     if (keys.ArrowLeft.pressed && enemy.lastKey==='ArrowLeft'){
-        enemy.velocity.x=-5
-        enemy.switchSprite('run')
+        enemy.velocity.x=-5;
+        enemy.switchSprite('run');
         
     }
     else if (keys.ArrowRight.pressed && enemy.lastKey==='ArrowRight'){
-        enemy.velocity.x=5
-        enemy.switchSprite('run')
+        enemy.velocity.x=5;
+        enemy.switchSprite('run');
     }
     else{
-        enemy.switchSprite('idle')
+        enemy.switchSprite('idle');
     }
 
     //falling
     if(enemy.velocity.y <0){
-        enemy.switchSprite('jump')
+        enemy.switchSprite('jump');
         
     }
     else if(enemy.velocity>0){
-        enemy.switchSprite('fall')
+        enemy.switchSprite('fall');
     }
 
     if (player.position.x < 0) {
-    player.position.x = 0
+    player.position.x = 0;
 } else if (player.position.x + player.width > canvas.width) {
-    player.position.x = canvas.width - player.width
+    player.position.x = canvas.width - player.width;
 }
 
 // Clamp Enemy inside screen
 if (enemy.position.x < 0) {
     enemy.position.x = 0
 } else if (enemy.position.x + enemy.width > canvas.width) {
-    enemy.position.x = canvas.width - enemy.width
+    enemy.position.x = canvas.width - enemy.width;
 }
 
     
@@ -299,16 +299,16 @@ if (enemy.position.x < 0) {
         player.frameCurrent === 4
     )
         {
-            enemy.takeHit()
-            player.isAttacking = false
-            document.querySelector('#enemyhealth').style.width= enemy.health + '%'
+            enemy.takeHit();
+            player.isAttacking = false;
+            document.querySelector('#enemyhealth').style.width= enemy.health + '%';
             
 
         }
 
         //for missews
         if (player.isAttacking && player.frameCurrent===4){
-            player.isAttacking =false
+            player.isAttacking =false;
         }
 
     //enemy attacking detection
@@ -321,20 +321,20 @@ if (enemy.position.x < 0) {
         enemy.frameCurrent === 2
     )
         {
-            player.takeHit()
-            enemy.isAttacking = false
-            document.querySelector('#playerhealth').style.width= player.health + '%'
+            player.takeHit();
+            enemy.isAttacking = false;
+            document.querySelector('#playerhealth').style.width= player.health + '%';
         }
 
         //for missew
         if (enemy.isAttacking && enemy.frameCurrent===2){
-            enemy.isAttacking =false
+            enemy.isAttacking =false;
         }
     
     //endgame based on health
 
     if(enemy.health <= 0 || player.health <= 0){
-        findWinner({player,enemy,timerId})
+        findWinner({player,enemy,timerId});
     }
 
 }
@@ -343,7 +343,7 @@ if (enemy.position.x < 0) {
         
     
 
-animate()
+animate();
 
 
 window.addEventListener('keydown', (event) =>{
@@ -353,24 +353,24 @@ window.addEventListener('keydown', (event) =>{
 
             //player controls
             case 'd':
-                keys.d.pressed = true
-                player.lastKey = 'd'
-                break 
+                keys.d.pressed = true;
+                player.lastKey = 'd';
+                break ;
             case 'a':
-                keys.a.pressed = true
-                player.lastKey ='a'
-                break 
+                keys.a.pressed = true;
+                player.lastKey ='a';
+                break ;
 
             case 'w':
                 if (player.jumps < 2) {
-                    player.velocity.y = -20
-                    player.jumps++
+                    player.velocity.y = -20;
+                    player.jumps++;
                 }
-                break 
+                break ;
             
             case 's':
-                player.attack()
-                break
+                player.attack();
+                break;
 
         }
 }
@@ -379,23 +379,23 @@ window.addEventListener('keydown', (event) =>{
     if(!enemy.dead){
     switch (event.key){
         case 'ArrowRight':
-            keys.ArrowRight.pressed = true
-            enemy.lastKey = 'ArrowRight'
-            break 
+            keys.ArrowRight.pressed = true;
+            enemy.lastKey = 'ArrowRight';
+            break; 
         case 'ArrowLeft':
-            keys.ArrowLeft.pressed = true
-            enemy.lastKey ='ArrowLeft'
+            keys.ArrowLeft.pressed = true;
+            enemy.lastKey ='ArrowLeft';
             break 
 
         case 'ArrowUp':
             if (enemy.jumps < 2) {
-                enemy.velocity.y = -20
-                enemy.jumps++
+                enemy.velocity.y = -20;
+                enemy.jumps++;
             }
             break 
         case 'ArrowDown':
-            enemy.attack()
-            break
+            enemy.attack();
+            break;
     }
 }
 })
@@ -405,26 +405,26 @@ window.addEventListener('keyup', (event) =>{
 
         //player
         case 'd':
-            keys.d.pressed = false
-            break 
+            keys.d.pressed = false;
+            break;
         case 'a':
-            keys.a.pressed = false
-            break 
+            keys.a.pressed = false;
+            break; 
         case 'w':
-            keys.w.pressed = false
-            break 
+            keys.w.pressed = false;
+            break; 
     }
         //enemy
     switch (event.key){
         case 'ArrowRight':
-            keys.ArrowRight.pressed = false
-            break 
+            keys.ArrowRight.pressed = false;
+            break; 
         case 'ArrowLeft':
-            keys.ArrowLeft.pressed = false
-            break 
+            keys.ArrowLeft.pressed = false;
+            break; 
         case 'ArrowUp':
-            keys.ArrowUp.pressed = false
-            break 
+            keys.ArrowUp.pressed = false;
+            break;
     }
 })
 
@@ -440,18 +440,18 @@ function bindButton(buttonId, onPress, onRelease) {
 
     // Trigger movement on press
     btn.addEventListener('pointerdown', (e) => {
-        e.preventDefault() // Prevents zooming/scrolling on mobile
-        onPress()
+        e.preventDefault(); // Prevents zooming/scrolling on mobile
+        onPress();
     })
 
     // Stop movement on release (or when finger/mouse leaves the button)
     btn.addEventListener('pointerup', (e) => {
-        e.preventDefault()
-        if (onRelease) onRelease()
+        e.preventDefault();
+        if (onRelease) onRelease();
     })
     btn.addEventListener('pointerleave', (e) => {
-        e.preventDefault()
-        if (onRelease) onRelease()
+        e.preventDefault();
+        if (onRelease) onRelease();
     })
 }
 
