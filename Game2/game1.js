@@ -359,6 +359,7 @@ function update() {
 
 // --- RENDERING ROUTINE WITH ENEMY HP DISPLAY ---
 function draw() {
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (gameState === 'MENU') {
@@ -416,6 +417,11 @@ function draw() {
     });
 
   } else if (gameState === 'ATTACK_TARGET' || gameState === 'ATTACK_ANIMATION') {
+    
+    //ctx.fillStyle = '#ffffff';
+    //ctx.fillRect(targetBar.x - targetBar.width / 2, 12, targetBar.width, canvas.height - 24);
+
+
     ctx.strokeStyle = '#00ff00';
     ctx.lineWidth = 4;
     ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
@@ -423,9 +429,7 @@ function draw() {
     ctx.fillStyle = '#00ff00';
     ctx.fillRect(canvas.width / 2 - 10, 10, 20, canvas.height - 20);
 
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(targetBar.x - targetBar.width / 2, 12, targetBar.width, canvas.height - 24);
-
+    
     // Render Enemy HP Bar and Damage Overlay directly on Canvas
     if (showEnemyHpBar) {
       const barWidth = 200;

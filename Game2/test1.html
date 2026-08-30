@@ -11,7 +11,7 @@
     }
 
     body {
-      background-color: #5b5b5b;
+      background-color: #000000;
       color: #ffffff;
       font-family: 'Courier New', Courier, monospace;
       display: flex;
@@ -21,8 +21,196 @@
       margin: 0;
     }
 
-    #game-container{
-        background-color: #1e1e1e;
+    #game-container {
+      width: 640px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Enemy Area */
+    #enemy-area {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      margin-bottom: 10px;
+    }
+
+    #enemy-sprite {
+      width: 120px;
+      height: 120px;
+      transition: opacity 1.5s ease;
+    }
+
+    .enemy-dead {
+      opacity: 0;
+    }
+
+    #dialogue-bubble {
+      position: absolute;
+      top: 20px;
+      right: 120px;
+      background-color: #ffffff;
+      color: #000000;
+      border: 3px solid #000000;
+      border-radius: 10px;
+      padding: 10px 15px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    #dialogue-bubble::after {
+      content: '';
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 6px 10px 6px 0;
+      border-style: solid;
+      border-color: transparent #ffffff transparent transparent;
+    }
+
+    /* Enemy HP Bar (Shows on Hit) */
+    #enemy-hp-container {
+      position: absolute;
+      top: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #damage-text {
+      color: #ff0000;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    #enemy-hp-bar {
+      width: 120px;
+      height: 12px;
+      background-color: #c30000;
+      border: 1px solid #000000;
+    }
+
+    #enemy-hp-fill {
+      width: 100%;
+      height: 100%;
+      background-color: #00ff00;
+      transition: width 0.2s ease;
+    }
+
+    /* Main Battle Canvas */
+    #arena {
+      background-color: #000000;
+      border: 5px solid #ffffff;
+      display: block;
+    }
+
+    /* Player HUD & Stats */
+    #player-hud {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 15px 0;
+      padding: 0 10px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    #hp-bar-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #hp-bar-background {
+      width: 120px;
+      height: 20px;
+      background-color: #c30000;
+    }
+
+    #hp-bar-fill {
+      width: 100%;
+      height: 100%;
+      background-color: #ffff00;
+      transition: width 0.2s ease;
+    }
+
+    /* Action Buttons Bar */
+    #action-buttons {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px 0;
+      background-color: #000000;
+      border: 3px solid #ff7f00;
+      color: #ff7f00;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      color: #ffff00;
+      border-color: #ffff00;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Game Over Overlay Screen */
+    #game-over-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    #game-over-screen h1 {
+      color: #ff0000;
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    #game-over-screen button {
+      padding: 10px 20px;
+      font-size: 18px;
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #000;
+      color: #fff;
+      border: 2px solid #fff;
+      cursor: pointer;
+    }
+
+    #game-over-screen button:hover {
+      background-color: #fff;
+      color: #000;
+    }
+
+    /* Utility */
+    .hidden {
+      display: none !important;
     }
     
   </style>
@@ -33,21 +221,21 @@
     
     <!-- ENEMY DISPLAY AREA -->
     <div id="enemy-area">
-      <!--<div id="enemy-hp-container" class="hidden">
+      <div id="enemy-hp-container" class="hidden">
         <div id="damage-text">0</div>
         <div id="enemy-hp-bar">
           <div id="enemy-hp-fill"></div>
         </div>
       </div>
 
-      <!-ptional visual image element for enemy 
+     
       <img id="enemy-sprite" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%2300ff00'/></svg>" alt="Enemy Sprite">
-      -->
+     
       <div id="dialogue-bubble">Ribbit, ribbit...</div>
     </div>
 
     <!-- MAIN BATTLE CANVAS AREA -->
-    <canvas id="arena" ></canvas>
+    <canvas id="arena" width="380" height="200"></canvas>
 
     <!-- PLAYER STATS / HUD -->
     <div id="player-hud">
@@ -72,7 +260,7 @@
     <!-- GAME OVER SCREEN OVERLAY -->
     <div id="game-over-screen" class="hidden">
       <h1>GAME OVER</h1>
-      <button onclick="resetGame()">RETRY</button>
+      <button id = "btn-retry" onclick="resetGame()">RETRY</button>
     </div>
 
   </div>
