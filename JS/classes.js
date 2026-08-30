@@ -30,17 +30,18 @@ class Sprite {
             this.image.height *this.scale)
     }
 
-    animateFrames(){
-        this.framesElapsed++
-        if(this.framesElapsed % this.framesHold === 0){
-        if(this.frameCurrent < this.framesMax - 1){
-            this.frameCurrent++
-        }
-        else{
-            this.frameCurrent =0
+    animateFrames() {
+    this.framesElapsed++;
+
+    if (this.framesElapsed % this.framesHold === 0) {
+        if (this.frameCurrent < (this.frameEnd ?? this.framesMax - 1)) {
+            this.frameCurrent++;
+        } else {
+            // Loop back to frameStart or stay on the last frame
+            this.frameCurrent = this.frameStart ?? 0;
         }
     }
-    }
+}
 
     update(){
         this.draw()
@@ -277,15 +278,23 @@ class Enemy extends Sprite {
 
     switchSprite(sprite){
         // Safe animation override checks
-        if (this.sprites.takehit && this.image === this.sprites.takehit.image && 
-            this.frameCurrent < this.sprites.takehit.framesMax - 1)
-            return
+        if (this.image === this.sprites.death.image) return;
+    if (this.image === this.sprites.takehit.image && this.frameCurrent < this.sprites.takehit.framesMax - 1) return;
+    if (this.image === this.sprites.attack1.image && this.frameCurrent < this.sprites.attack1.framesMax - 1) return;
 
-        if (this.sprites.death && this.image === this.sprites.death.image) {
-            if (this.frameCurrent === this.sprites.death.framesMax - 1)
-                this.dead = true
-            return
-        }
+    if (this.image !== this.sprites[sprite].image || this.currentSprite !== sprite) {
+        this.currentSprite = sprite;
+        this.image = this.sprites[sprite].image;
+        this.framesMax = this.sprites[sprite].framesMax;
+
+        // Set start/end bounds (defaulting to full sheet if not specified)
+        this.frameStart = this.sprites[sprite].frameStart ?? 0;
+        this.frameEnd = this.sprites[sprite].frameEnd ?? (this.framesMax - 1);
+        
+        // Reset current frame to the start frame of the animation
+        this.frameCurrent = this.frameStart;
+    }
+
 
         switch(sprite){
             case 'idle':

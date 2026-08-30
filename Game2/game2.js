@@ -10,24 +10,28 @@ const enemySprite = new Enemy({
   position: { x: 0, y: 0 },
   offset: { x: 0, y: 0 }, // Reset offset to 0 so it stays centered inside canvas
   scale: 1,
-  framesMax: 4,
-  imageSrc: './../Assets/kenji/Idle.png',
+  framesMax: 6,
+  imageSrc: './../Assets/Fire_Spirit/Idle.png',
   sprites: {
     idle: {
-      imageSrc: './../Assets/kenji/Idle.png',
-      framesMax: 4
+      imageSrc: './../Assets/Fire_Spirit/Idle.png',
+      framesMax: 6
     },
     talking: {
-      imageSrc: './../Assets/kenji/Idle.png',
-      framesMax: 4
+      imageSrc: './../Assets/Fire_Spirit/Idle_2.png',
+      framesMax: 6
+    },
+    fighting: {
+      imageSrc: './../Assets/Fire_Spirit/Shot.png',
+      framesMax: 8
     },
     takehit: {
-      imageSrc: './../Assets/kenji/Take hit.png',
+      imageSrc: './../Assets/Fire_Spirit/Hurt.png',
       framesMax: 3
     },
     death: {
-      imageSrc: './../Assets/kenji/Death.png',
-      framesMax: 7
+      imageSrc: './../Assets/Fire_Spirit/Dead.png',
+      framesMax: 5
     }
   }
 });
@@ -58,7 +62,7 @@ let inventory = [
 let selectedItemIndex = 0;
 
 const enemy = {
-    name: 'Froggit',
+    name: 'Flameo',
     hp: 30,
     maxHp: 30
 };
@@ -208,7 +212,7 @@ window.addEventListener('keyup' , (e) =>{
 function handleMenuSelection() {
   if(menuState === 'ACT'){
     spareable = true;
-    showTextMessage("* You told Froggit a compliment.\n" +
+    showTextMessage("* You told Flameo a compliment.\n" +
   "  It didn't understand, but was flattered.")
   }
 
@@ -244,7 +248,7 @@ function handleMenuSelection() {
         triggerVictory(true);
       }
       else{
-        showTextMessage("* Froggit will not spare you just yet.")
+        showTextMessage("* Flameo will not spare you just yet.")
       }
   }
 }
@@ -565,7 +569,7 @@ function draw(){
         ctx.font = '20px Courier New';
 
         ctx.fillText(
-          `* ${enemy.name} draws near!`,
+          `* You feel the heat of ${enemy.name}`,
           30,
           50
         );
