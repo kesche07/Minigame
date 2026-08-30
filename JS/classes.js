@@ -48,6 +48,7 @@ class Sprite {
     }
 }
 
+//game1 class
 class Fighter extends Sprite{
     constructor({position,
         velocity,
@@ -223,3 +224,122 @@ class Fighter extends Sprite{
     }
 }
 
+
+//game2 class
+class Enemy extends Sprite {
+    constructor({
+        position,
+        offset = { x: 0, y: 0 }, 
+        imageSrc,
+        scale = 1,
+        framesMax = 1,
+        sprites
+    }){
+        super({
+            position,
+            imageSrc,
+            scale,
+            framesMax,
+            offset
+        })
+
+        this.isAttacking = false
+        this.health = 100
+        this.dead = false
+        this.sprites = sprites
+
+        this.frameCurrent = 0
+        this.framesElapsed = 0
+        this.framesHold = 15
+
+        // Preload all enemy animation sheets
+        for (const sprite in sprites) {
+            sprites[sprite].image = new Image()
+            sprites[sprite].image.src = sprites[sprite].imageSrc
+        }
+    }
+
+    update(){
+        this.draw()
+        if (!this.dead) {
+            this.animateFrames()
+        }
+    }
+
+    takeHit(){
+        this.health -= 20
+        if (this.health <= 0) {
+            this.switchSprite('death')
+        } else {
+            this.switchSprite('takehit')
+        }
+    }
+
+    switchSprite(sprite){
+        // Safe animation override checks
+        if (this.sprites.takehit && this.image === this.sprites.takehit.image && 
+            this.frameCurrent < this.sprites.takehit.framesMax - 1)
+            return
+
+        if (this.sprites.death && this.image === this.sprites.death.image) {
+            if (this.frameCurrent === this.sprites.death.framesMax - 1)
+                this.dead = true
+            return
+        }
+
+        switch(sprite){
+            case 'idle':
+                if (this.sprites.idle && this.image !== this.sprites.idle.image) {
+                    this.image = this.sprites.idle.image
+                    this.framesMax = this.sprites.idle.framesMax
+                    this.frameCurrent = 0
+                }
+                break
+
+            case 'talking':
+                if (this.sprites.talking && this.image !== this.sprites.talking.image) {
+                    this.image = this.sprites.talking.image
+                    this.framesMax = this.sprites.talking.framesMax
+                    this.frameCurrent = 0
+                }
+                break
+
+            case 'takehit':
+                if (this.sprites.takehit && this.image !== this.sprites.takehit.image) {
+                    this.image = this.sprites.takehit.image
+                    this.framesMax = this.sprites.takehit.framesMax
+                    this.frameCurrent = 0
+                }
+                break
+
+            case 'death':
+                if (this.sprites.death && this.image !== this.sprites.death.image) {
+                    this.image = this.sprites.death.image
+                    this.framesMax = this.sprites.death.framesMax
+                    this.frameCurrent = 0
+                }
+                break
+        }
+    }
+}
+
+class Player extends Sprite {
+  constructor(config) {
+    super(config);
+    this.hp = 20;
+    this.maxHp = 20;
+    this.speed = 3;
+    this.size = 12;
+  }
+
+  move(keys, canvasWidth, canvasHeight) {
+    if (keys['ArrowUp'] || keys['w']) this.position.y -= this.speed;
+    if (keys['ArrowDown'] || keys['s']) this.position.y += this.speed;
+    if (keys['ArrowLeft'] || keys['a']) this.position.x -= this.speed;
+    if (keys['ArrowRight'] || keys['d']) this.position.x += this.speed;
+
+    const half = this.size / 2;
+    this.position.x = Math.max(half, Math.min(canvasWidth - half, this.position.x));
+    this.position.y = Math.max(half, Math.min(canvasHeight - half, this.position.y));
+  }
+}
