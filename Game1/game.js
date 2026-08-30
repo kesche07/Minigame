@@ -32,23 +32,33 @@ const player = new Fighter({
    position: { x: 0, y: 0 },
    velocity: { x: 0, y: 0 },
    color: 'red',
-   offset: { x: 0, y: 0 },
-   imageSrc: './../Assets/samuraiMack/Idle.png',
+   offset: { x: 20, y: 0 },
+   imageSrc: './../Assets/LightningMage/Idle.png',
    framesMax: 8,
    scale: 2.5,
-   offset: { x: 215, y: 157 },
+   offset: { x: 100, y: 170 },
    sprites: {
-    idle: { imageSrc: './../Assets/samuraiMack/Idle.png', framesMax: 8 },
-    run: { imageSrc: './../Assets/samuraiMack/Run.png', framesMax: 8 },
-    jump: { imageSrc: './../Assets/samuraiMack/Jump.png', framesMax: 2 },
-    fall: { imageSrc: './../Assets/samuraiMack/Fall.png', framesMax: 2 },
-    attack1: { imageSrc: './../Assets/samuraiMack/Attack1.png', framesMax: 6 },
-    takehit: { imageSrc: './../Assets/samuraiMack/Take Hit.png', framesMax: 4 },
-    death: { imageSrc: './../Assets/samuraiMack/Death.png', framesMax: 6 }
+    idle: { imageSrc: './../Assets/LightningMage/Idle.png', framesMax: 7 },
+    run: { imageSrc: './../Assets/LightningMage/Run.png', framesMax: 8 },
+    jump: { 
+        imageSrc: './../Assets/LightningMage/Jump.png', 
+        framesMax: 8,
+        frameStart: 0,
+        frameEnd: 3 
+    },
+    fall: { 
+        imageSrc: './../Assets/LightningMage/Jump.png', 
+        framesMax: 8,
+        frameStart: 4,
+        frameEnd: 7 
+    },
+    attack1: { imageSrc: './../Assets/LightningMage/Attack_2.png', framesMax: 4 },
+    takehit: { imageSrc: './../Assets/LightningMage/Hurt.png', framesMax: 3 },
+    death: { imageSrc: './../Assets/LightingMage/Dead.png', framesMax: 5 }
    },
    hitbox: {
-        offset: { x: 0, y: -30 },
-        width: 260,
+        offset: { x: 40, y: -30 },
+        width: 150,
         height: 180
    }
 });
@@ -59,22 +69,32 @@ const enemy = new Fighter({
     velocity: { x: 0, y: 0 },
     color: 'blue',
     offset: { x: -50, y: 0 },
-    imageSrc: './../Assets/kenji/Idle.png',
+    imageSrc: './../Assets/WandererMagican/Idle.png',
     framesMax: 4,
     scale: 2.5,
-    offset: { x: 215, y: 170 },
+    offset: { x: 140, y: 170 },
     sprites: {
-        idle: { imageSrc: './../Assets/kenji/Idle.png', framesMax: 4 },
-        run: { imageSrc: './../Assets/kenji/Run.png', framesMax: 8 },
-        jump: { imageSrc: './../Assets/kenji/Jump.png', framesMax: 2 },
-        fall: { imageSrc: './../Assets/kenji/Fall.png', framesMax: 2 },
-        attack1: { imageSrc: './../Assets/kenji/Attack1.png', framesMax: 4 },
-        takehit: { imageSrc: './../Assets/kenji/Take hit.png', framesMax: 3 },
-        death: { imageSrc: './../Assets/kenji/Death.png', framesMax: 7 }
+        idle: { imageSrc: './../Assets/WandererMagican/Idle.png', framesMax: 8 },
+        run: { imageSrc: './../Assets/WandererMagican/Run.png', framesMax: 8 },
+        jump: { 
+        imageSrc: './../Assets/WandererMagican/Jump.png', 
+        framesMax: 8,
+        frameStart: 0,
+        frameEnd: 3 
+    },
+    fall: { 
+        imageSrc: './../Assets/WandererMagican/Jump.png', 
+        framesMax: 8,
+        frameStart: 4,
+        frameEnd: 7
+    },
+        attack1: { imageSrc: './../Assets/WandererMagican/Attack_1.png', framesMax: 7 },
+        takehit: { imageSrc: './../Assets/WandererMagican/Hurt.png', framesMax: 4},
+        death: { imageSrc: './../Assets/WandererMagican/Dead.png', framesMax: 4 }
     },
     hitbox: {
-        offset: { x: -175, y: -30 },
-        width: 225,
+        offset: { x: -120, y: -30 },
+        width: 150,
         height: 180
     }
 });
@@ -103,14 +123,6 @@ if (controlsOverlay) {
     controlsOverlay.addEventListener('touchstart', startGame, { once: true });
 }
 
-function rectangularCollision({ rectangle1, rectangle2 }) {
-    return (
-        rectangle1.hitbox.position.x + rectangle1.hitbox.width >= rectangle2.position.x &&
-        rectangle1.hitbox.position.x <= rectangle2.position.x + rectangle2.width &&
-        rectangle1.hitbox.position.y + rectangle1.hitbox.height >= rectangle2.position.y &&
-        rectangle1.hitbox.position.y <= rectangle2.position.y + rectangle2.height
-    );
-}
 
 // inf loop per frame for movement
 function animate() {
@@ -125,7 +137,16 @@ function animate() {
     c.fillRect(0, 0, canvas.width, canvas.height);
 
     player.update();
+    //c.fillStyle = 'rgba(0, 255, 0, 0.4)'; // Semi-transparent green
+//c.fillRect(
+ //   player.position.x,
+  //  player.position.y,
+  //  player.width,
+  //  player.height
+//);
+
     enemy.update();
+
 
     // Pause physics & controls until screen is tapped
     if (!gameStarted) return;
@@ -187,14 +208,14 @@ function animate() {
     // Player attacking detection
     if (rectangularCollision({ rectangle1: player, rectangle2: enemy }) &&
         player.isAttacking && 
-        player.frameCurrent === 4
+        player.frameCurrent === 3
     ) {
         enemy.takeHit();
         player.isAttacking = false;
         document.querySelector('#enemyhealth').style.width = enemy.health + '%';
     }
 
-    if (player.isAttacking && player.frameCurrent === 4) {
+    if (player.isAttacking && player.frameCurrent === 3) {
         player.isAttacking = false;
     }
 
