@@ -1,6 +1,37 @@
 const canvas = document.getElementById('arena');
 const ctx = canvas.getContext('2d');
 
+const enemyCanvas = document.getElementById('enemy-canvas');
+const enemyCtx = enemyCanvas.getContext('2d');
+
+window.c = ctx; // Main battle canvas context
+
+const enemySprite = new Enemy({
+  position: { x: 0, y: 0 },
+  offset: { x: 0, y: 0 }, // Reset offset to 0 so it stays centered inside canvas
+  scale: 1,
+  framesMax: 4,
+  imageSrc: './../Assets/kenji/Idle.png',
+  sprites: {
+    idle: {
+      imageSrc: './../Assets/kenji/Idle.png',
+      framesMax: 4
+    },
+    talking: {
+      imageSrc: './../Assets/kenji/Idle.png',
+      framesMax: 4
+    },
+    takehit: {
+      imageSrc: './../Assets/kenji/Take hit.png',
+      framesMax: 3
+    },
+    death: {
+      imageSrc: './../Assets/kenji/Death.png',
+      framesMax: 7
+    }
+  }
+});
+
 // Initial Game State
 let gameState = 'MENU'
 let menuState = 'MAIN';
@@ -263,6 +294,10 @@ function executeAttack(){
   // Calculate damage
   lastHitDamage = calculateDamage(targetBar.x);
 
+  if (lastHitDamage > 0) {
+    enemySprite.takeHit();
+  }
+
   // Reduce enemy HP
   enemy.hp = Math.max(
     0,
@@ -306,16 +341,16 @@ function triggerVictory(spared = false){
   if (enemySprite){
 
     if(spared){
-      enemySprite.style.opacity = '0.5';
+      enemySprite.switchSprite('idle');
     }
     else{
-      enemySprite.classList.add('enemy-dead');
+      enemySprite.switchSprite('death');
     }
 
   }
 
   if(dialogue){
-
+    enemySprite.switchSprite('talking')
     dialogue.innerText =
       spared
         ? "Ribbit (Thank you!)"
@@ -514,6 +549,14 @@ function draw(){
     canvas.width,
     canvas.height
   );
+
+  enemyCtx.clearRect(0, 0, enemyCanvas.width, enemyCanvas.height);
+  
+  // Temporarily bind `c` for Sprite's draw method
+  const mainCtx = window.c;
+  window.c = enemyCtx;
+  enemySprite.update();
+  window.c = mainCtx;
 
 
   if (gameState === 'MENU'){
@@ -747,5 +790,147 @@ function draw(){
     draw();
   });
 }
+
+// ==========================================
+// MOBILE & TOUCH CONTROLS LOGIC
+// ==========================================
+
+// Helper function to bind Touch events for tap & hold movement
+function bindTouchKey(elementId, keyName) {
+  const btn = document.getElementById(elementId);
+  if (!btn) return;
+
+  const startPress = (e) => {
+    e.preventDefault();
+    btn.classList.add('active');
+    keys[keyName] = true;
+
+    // Handle instant triggers for menu items
+    if (gameState === 'MENU' && menuState === 'ITEM') {
+      if (keyName === 'ArrowUp') {
+        selectedItemIndex = (selectedItemIndex - 1 + inventory.length) % inventory.length;
+      } else if (keyName === 'ArrowDown') {
+        selectedItemIndex = (selectedItemIndex + 1) % inventory.length;
+      }
+    }
+  };
+
+  const endPress = (e) => {
+    e.preventDefault();
+    btn.classList.remove('active');
+    keys[keyName] = false;
+  };
+
+  btn.addEventListener('pointerdown', startPress);
+  btn.addEventListener('pointerup', endPress);
+  btn.addEventListener('pointerleave', endPress);
+  btn.addEventListener('pointercancel', endPress);
+}
+
+// Bind D-Pad Buttons to virtual key controls
+bindTouchKey('btn-touch-up', 'ArrowUp');
+bindTouchKey('btn-touch-down', 'ArrowDown');
+bindTouchKey('btn-touch-left', 'ArrowLeft');
+bindTouchKey('btn-touch-right', 'ArrowRight');
+
+// Bind Confirm (Enter / Space) Button
+const touchConfirm = document.getElementById('btn-touch-confirm');
+if (touchConfirm) {
+  touchConfirm.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    if (gameState === 'MENU' && menuState !== 'MAIN') {
+      handleMenuSelection();
+    } else if (gameState === 'ATTACK_TARGET') {
+      executeAttack();
+    }
+  });
+}
+
+// Bind Cancel (X key) Button
+const touchCancel = document.getElementById('btn-touch-cancel');
+if (touchCancel) {
+  touchCancel.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    if (gameState === 'MENU' && menuState !== 'MAIN') {
+      menuState = 'MAIN';
+      selectedItemIndex = 0;
+    }
+  });
+}
+
+// Bind Strike Button (During ATTACK_TARGET state)
+const touchStrike = document.getElementById('btn-touch-strike');
+if (touchStrike) {
+  touchStrike.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    if (gameState === 'ATTACK_TARGET') {
+      executeAttack();
+    }
+  });
+}
+
+// ==========================================
+// DYNAMIC TOUCH UI VISIBILITY UPDATER
+// ==========================================
+function updateTouchUI() {
+  const mobileControls = document.getElementById('mobile-controls');
+  const dpad = document.getElementById('dpad-container');
+  const actionTouch = document.getElementById('action-touch-container');
+  const attackTouch = document.getElementById('attack-touch-container');
+  const cancelBtn = document.getElementById('btn-touch-cancel');
+
+  if (!mobileControls) return;
+
+  // Show container during interactive states
+  const isTouchActiveState = (
+    gameState === 'MENU' || 
+    gameState === 'ATTACK_TARGET' || 
+    gameState === 'ENEMY_TURN'
+  );
+
+  if (isTouchActiveState) {
+    mobileControls.classList.remove('hidden');
+  } else {
+    mobileControls.classList.add('hidden');
+    return;
+  }
+
+  // 1. ATTACK TARGET STATE (Show Strike Button only)
+  if (gameState === 'ATTACK_TARGET') {
+    dpad.classList.add('hidden');
+    actionTouch.classList.add('hidden');
+    attackTouch.classList.remove('hidden');
+  } 
+  // 2. ENEMY TURN STATE (Show D-Pad for dodging)
+  else if (gameState === 'ENEMY_TURN') {
+    dpad.classList.remove('hidden');
+    actionTouch.classList.add('hidden');
+    attackTouch.classList.add('hidden');
+  } 
+  // 3. MENU SUB-SELECTIONS (ITEM, ACT, MERCY)
+  else if (gameState === 'MENU') {
+    attackTouch.classList.add('hidden');
+    
+    if (menuState === 'ITEM') {
+      dpad.classList.remove('hidden'); // Need up/down to select items
+    } else {
+      dpad.classList.add('hidden');
+    }
+
+    if (menuState !== 'MAIN') {
+      actionTouch.classList.remove('hidden');
+      if (cancelBtn) cancelBtn.classList.remove('hidden');
+    } else {
+      actionTouch.classList.add('hidden');
+    }
+  }
+}
+
+// Call updateTouchUI inside your existing update() function so it updates per frame
+const originalUpdate = update;
+update = function() {
+  originalUpdate();
+  updateTouchUI();
+};
 
 draw();
