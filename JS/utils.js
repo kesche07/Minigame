@@ -35,3 +35,19 @@ function decreaseTimer(){
         findWinner({player,enemy,timerId})
     }
 }
+
+const overlay = document.getElementById('controls-overlay');
+
+function startGame() {
+  // Hide the controls overlay screen
+  overlay.style.display = 'none';
+
+  // Start the countdown timer only after the player clicks
+  decreaseTimer();
+
+  // If you have a main animation/game loop function, start it here:
+  // animate(); 
+}
+
+overlay.addEventListener('click', startGame, { once: true });
+overlay.addEventListener('touchstart', startGame, { once: true });

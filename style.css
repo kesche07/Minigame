@@ -65,125 +65,102 @@ body {
   color: #ff7900;
 }
 
-
-#battle-container {
-  width: 600px;
+/* Overlay covering the full screen/game container */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85); /* Dark background cover */
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-}
-
-/* Enemy Area */
-#enemy-area {
-  height: 150px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  position: relative;
-}
-
-#enemy-sprite {
-  font-size: 80px;
-}
-
-#dialogue-bubble {
-  position: absolute;
-  right: -100px;
-  top: 20px;
-  background: #fff;
-  color: #000;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-weight: bold;
-}
-
-/* Arena Canvas */
-#arena {
-  border: 5px solid #fff;
-  background-color: #000;
-}
-
-/* Stats */
-#stats-bar {
-  display: flex;
-  gap: 20px;
   align-items: center;
-  font-weight: bold;
-  font-size: 18px;
-}
-
-#hp-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-#hp-bar-bg {
-  width: 100px;
-  height: 20px;
-  background-color: #c00;
-}
-
-#hp-bar-fill {
-  width: 100%;
-  height: 100%;
-  background-color: #ff0;
-}
-
-/* Menu Buttons */
-#menu-buttons {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.btn {
-  background: transparent;
-  border: 3px solid #ff7900;
-  color: #ff7900;
-  padding: 8px 24px;
-  font-size: 20px;
-  font-weight: bold;
+  z-index: 100; /* Ensures overlay sits on top of canvas and health bars */
   cursor: pointer;
+  user-select: none;
+}
+/* Center box styling */
+.overlay-content {
+  color: #ffffff;
+  text-align: center;
+  font-family: sans-serif;
+  padding: 30px;
+  border: 2px solid #ffffff;
+  border-radius: 12px;
+  background: rgba(20, 20, 20, 0.9);
 }
 
-.btn.active {
-  background-color: #ff7900;
-  color: #000;
-}
-/* Enemy HP Bar Styles */
-#enemy-hp-container {
-  position: absolute;
-  top: -10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
+.overlay-content h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
 }
 
-#enemy-hp-bg {
-  width: 120px;
-  height: 14px;
-  background-color: #444;
-  border: 2px solid #000;
+.overlay-content ul {
+  list-style: none;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1.8;
 }
 
-#enemy-hp-fill {
+.start-prompt {
+  margin-top: 25px;
+  font-size: 1.2rem;
+  color: #ffcc00;
+  animation: blink 1.2s infinite;
+}
+/* Controls Table Styling */
+.controls-table {
   width: 100%;
-  height: 100%;
-  background-color: #00ff00;
-  transition: width 0.3s ease;
+  border-collapse: collapse;
+  margin: 15px 0;
+  font-family: inherit;
 }
 
-#damage-text {
-  color: #ff0000;
-  font-size: 24px;
+.controls-table th, 
+.controls-table td {
+  padding: 8px 16px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.controls-table th {
+  font-size: 1.1rem;
+  color: #ffcc00;
+  border-bottom: 2px solid #ffcc00;
+  text-transform: uppercase;
+}
+
+.controls-table td:first-child {
+  text-align: left;
   font-weight: bold;
-  text-shadow: 2px 2px 0px #000;
+  color: #ddd;
 }
 
-.hidden {
-  display: none !important;
+/* Accent headers for player distinction */
+.p1-header {
+  color: #ff4d4d !important;
+}
+
+.p2-header {
+  color: #4d94ff !important;
+}
+
+/* Keyboard key badge styling */
+kbd {
+  background-color: #222;
+  border: 1px solid #666;
+  border-radius: 4px;
+  box-shadow: 0 2px 0 #000;
+  color: #fff;
+  display: inline-block;
+  font-size: 0.9rem;
+  padding: 2px 6px;
+  min-width: 24px;
+}
+
+/* Blinking effect for "Click to Start" */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
