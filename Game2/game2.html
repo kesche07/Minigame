@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Undertale Battle System</title>
+  <link rel="stylesheet" href="./../style.css">
+
+  <style>
+
+
+/*GAME*/
+
+#game-container {
+    width: min(640px, 100%);
+
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    position: relative;
+
+    padding: 8px;
+}
+
+
+/*ENEMY*/
+
+#enemy-area {
+  position: relative; /* Allows absolute positioning for touch overlay */
+  width: 100%;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+#enemy-canvas {
+    width: 120px;
+    height: 120px;
+    display: block;
+}
+
+
+
+/* CANVAS*/
+
+#arena {
+    width: 100%;
+    max-width: 380px;
+
+    height: auto;
+
+    background-color: #000;
+
+    border: 5px solid #fff;
+
+    display: block;
+}
+
+
+/*HUD*/
+
+#player-hud {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin: 15px 0;
+
+    padding: 0 10px;
+
+    font-weight: bold;
+
+    font-size: clamp(14px, 3vw, 20px);
+}
+
+#hp-bar-container {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    min-width: 0;
+}
+
+#hp-bar-background {
+    width: clamp(70px, 20vw, 120px);
+    height: clamp(14px, 4vw, 20px);
+
+    background-color: #c30000;
+}
+
+#hp-bar-fill {
+    width: 100%;
+    height: 100%;
+
+    background-color: #ffff00;
+
+    transition: width 0.2s ease;
+}
+
+
+/*BUTTONS */
+
+#action-buttons {
+    width: 100%;
+
+    display: flex;
+
+    gap: clamp(5px, 2vw, 10px);
+}
+
+.btn {
+    flex: 1;
+    min-width: 0;
+
+    padding: clamp(8px, 2vw, 12px) 0;
+
+    background-color: #000;
+
+    border: 3px solid #ff7f00;
+
+    color: #ff7f00;
+
+    font-family: 'Courier New', Courier, monospace;
+
+    font-size: clamp(14px, 4vw, 20px);
+
+    font-weight: bold;
+
+    text-align: center;
+
+    cursor: pointer;
+
+    touch-action: manipulation;
+}
+
+.btn:hover {
+    color: #ffff00;
+    border-color: #ffff00;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+
+/*GAME OVER*/
+
+#game-over-screen {
+    position: absolute;
+
+    inset: 0;
+
+    background-color: rgba(0, 0, 0, 0.95);
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    z-index: 100;
+}
+
+#game-over-screen h1 {
+    color: #ff0000;
+
+    font-size: clamp(32px, 10vw, 48px);
+
+    margin-bottom: 20px;
+
+    text-align: center;
+}
+
+#game-over-screen button {
+    padding: 10px 20px;
+
+    font-size: clamp(14px, 4vw, 18px);
+
+    font-family: 'Courier New', Courier, monospace;
+
+    background-color: #000;
+    color: #fff;
+
+    border: 2px solid #fff;
+
+    cursor: pointer;
+
+    touch-action: manipulation;
+}
+
+
+/* UTILITY*/
+
+.hidden {
+    display: none !important;
+}
+
+/* OVERLAY CONTAINER OVER THE ENEMY AREA */
+#mobile-controls {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none; /* Passes clicks through empty spaces */
+  z-index: 10;
+}
+
+/* Enable pointer events on active buttons */
+#mobile-controls .touch-btn {
+  pointer-events: auto;
+}
+
+/* Show touch controls on touch screens */
+@media (pointer: coarse), (hover: none) {
+  #mobile-controls:not(.hidden) {
+    display: flex;
+  }
+}
+
+/* Base Semi-Transparent Touch Controls */
+.touch-btn {
+  background-color: rgba(17, 17, 17, 0.75); /* Semi-transparent background */
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 16px;
+  font-weight: bold;
+  touch-action: manipulation;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(2px); /* Sleek backdrop effect */
+  transition: transform 0.05s ease, background-color 0.1s ease;
+}
+
+/* Button Active Press Effect */
+.touch-btn:active, .touch-btn.active {
+  transform: scale(0.92);
+  background-color: rgba(255, 127, 0, 0.9);
+  color: #000;
+  border-color: #ffff00;
+}
+
+/* Layout Adjustments for Left/Right Positioning */
+#dpad-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.dpad-middle {
+  display: flex;
+  gap: 3px;
+}
+
+.dpad-up, .dpad-down, .dpad-left, .dpad-right, .dpad-center {
+  width: 42px;
+  height: 42px;
+}
+
+.dpad-center {
+  border: none;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+#action-touch-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 120px;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 13px;
+}
+
+.confirm {
+  border-color: rgba(0, 255, 0, 0.8);
+  color: #00ff00;
+  background-color: rgba(0, 40, 0, 0.65);
+}
+
+.cancel {
+  border-color: rgba(255, 0, 0, 0.8);
+  color: #ff4444;
+  background-color: rgba(40, 0, 0, 0.65);
+}
+
+#attack-touch-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.strike-btn {
+  width: 80%;
+  padding: 14px 0;
+  font-size: 20px;
+  border-color: #00ff00;
+  color: #00ff00;
+  background-color: rgba(0, 50, 0, 0.85);
+}
+
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="Home"><a href="./../index.html"><h1>🏠︎</h1></a></div>
+    <div class="nav-brand">BATTLE ENCOUNTER</div>
+    <ul class="nav-links">
+      <li><a href="./../Game1/game.html">Game1</a></li>
+      <li><a href="#battle">Game2</a></li>
+      <li><a href="javascript:void(0);" onclick="window.location.reload();">Reset</a></li>
+    </ul>
+  </nav>
+
+  <audio id="bg-music" autoplay loop>
+  <source src="./../Assets/Audios/game2bg.mp3" type="audio/mpeg">
+</audio>
+
+  <div id="controls-overlay" class="overlay">
+  <div class="overlay-content">
+    <h2>Game Controls</h2>
+    <ul>
+      <li><strong>Movement:</strong> Arrow Keys</li>
+      <li><strong>Attack:</strong> Spacebar</li>
+      <li><strong>Select:</strong> Spacebar/Enter</li>
+      <li><strong>Exit:</strong> X</li>
+    </ul>
+    <p class="start-prompt">Click or Tap anywhere to Start</p>
+  </div>
+</div>
+
+  <div id="game-container">
+    
+    <!-- ENEMY DISPLAY AREA -->
+    <div id="enemy-area">
+      <div id="enemy-hp-container" class="hidden">
+        <div id="damage-text">0</div>
+        <div id="enemy-hp-bar">
+          <div id="enemy-hp-fill"></div>
+        </div>
+      </div>
+
+     
+      <canvas id="enemy-canvas" width="120" height="120"></canvas>
+     
+      <!--Non keyboard controls-->
+  <div id="mobile-controls" class="hidden">
+  
+  <!-- D-PAD FOR MENUS & SOUL DODGING -->
+  <div id="dpad-container" class="touch-group">
+    <button class="touch-btn dpad-up" id="btn-touch-up">▲</button>
+    <div class="dpad-middle">
+      <button class="touch-btn dpad-left" id="btn-touch-left">◄</button>
+      <button class="touch-btn dpad-center" disabled></button>
+      <button class="touch-btn dpad-right" id="btn-touch-right">►</button>
+    </div>
+    <button class="touch-btn dpad-down" id="btn-touch-down">▼</button>
+  </div>
+
+  <!-- ACTION BUTTONS FOR TOUCH (SELECT / CANCEL) -->
+  <div id="action-touch-container" class="touch-group">
+    <button class="touch-btn action-btn confirm" id="btn-touch-confirm">SELECT</button>
+    <button class="touch-btn action-btn cancel" id="btn-touch-cancel">CANCEL (X)</button>
+  </div>
+
+  <!-- STRIKE BUTTON FOR ATTACK MINIGAME -->
+  <div id="attack-touch-container" class="touch-group hidden">
+    <button class="touch-btn strike-btn" id="btn-touch-strike">STRIKE!</button>
+  </div>
+
+</div>
+    </div>
+
+    <!-- MAIN BATTLE CANVAS AREA -->
+    <canvas id="arena" width="380" height="200"></canvas>
+
+    <!-- PLAYER STATS / HUD -->
+    <div id="player-hud">
+      <div id="player-name"> &nbsp; LV 1</div>
+      <div id="hp-bar-container">
+        <span>HP</span>
+        <div id="hp-bar-background">
+          <div id="hp-bar-fill"></div>
+        </div>
+        <span id="hp-text">20 / 20</span>
+      </div>
+    </div>
+
+    <!-- MAIN MENU ACTION BUTTONS -->
+    <div id="action-buttons">
+      <button id="btn-fight" class="btn">FIGHT</button>
+      <button id="btn-act" class="btn">ACT</button>
+      <button id="btn-item" class="btn">ITEM</button>
+      <button id="btn-mercy" class="btn">MERCY</button>
+    </div>
+
+    <!-- GAME OVER SCREEN OVERLAY -->
+    <div id="game-over-screen" class="hidden">
+      <h1>GAME OVER</h1>
+      <button id = "btn-retry">RETRY</button>
+    </div>
+
+  </div>
+
+  
+
+  <!-- SCRIPT IMPORT -->
+  <script src="./../JS/utils.js"></script>
+  <script src="./../JS/classes.js"></script>
+  <script src="./game2.js"></script>
+</body>
+</html>

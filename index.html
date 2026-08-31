@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Small Minigame</title>
   <link rel="stylesheet" href="./style.css">
-  <STYLE>
+  <style>
     .navbar {
   font-family:"Jersey 15", sans-serif;
   width: 100%;
@@ -48,25 +48,24 @@
       color: #007bff;
     }
 
-  </STYLE>
+  </style>
 </head>
 <body>
-  <!-- Navigation Bar -->
+<audio id="bg-music" autoplay loop>
+  <source src="./Assets/Audios/indexbg.mp3" type="audio/mpeg">
+</audio>
+
+
   <nav class="navbar">
     <div class="Home"><a href="#"><h1>🏠︎</h1></a></div>
     <div class="nav-brand">ARCADE GAMES</div>
   </nav>
 
   <div class="grid-container">
-    <a href="./game.html" class="grid-item">Game 1</a>
-    <a href="./game2.html" class="grid-item">Game2 </a>
+    <a href="Game1/game.html" class="grid-item">Game 1</a>
+    <a href="Game2/game2.html" class="grid-item">Game2 </a>
     <a href="./about.html" class="grid-item">About & Contact</a>
     
   </div>
-
- 
-  <script src="./JS/utils.js"></script>
-  <script src="./JS/classes.js"></script>
-  <script src="./game.js"></script>
 </body>
 </html>

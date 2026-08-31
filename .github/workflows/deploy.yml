@@ -16,15 +16,23 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # Step A: Get the code
+      
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step B: Install Node (needed for our testing tool)
+     
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+      
+      - name: Check JS Syntax
+        run: |
+          for file in $(find . -type f -name "*.js" ! -path "*/node_modules/*"); do
+            echo "Checking $file..."
+            node --check "$file"
+          done
+      
 
       # Step C: THE GATEKEEPER - Test the HTML syntax
       - name: Check HTML Syntax
