@@ -36,9 +36,9 @@ class Sprite {
     if (this.framesElapsed % this.framesHold === 0) {
         if (this.frameCurrent < (this.frameEnd ?? this.framesMax - 1)) {
             this.frameCurrent++;
-        } else {
+        } else if (!this.dead){
             // Loop back to frameStart or stay on the last frame
-            this.frameCurrent = this.frameStart ?? 0;
+            this.frameCurrent =  0;
         }
     }
 }

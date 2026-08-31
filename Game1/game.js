@@ -54,7 +54,7 @@ const player = new Fighter({
     },
     attack1: { imageSrc: './../Assets/LightningMage/Attack_2.png', framesMax: 4 },
     takehit: { imageSrc: './../Assets/LightningMage/Hurt.png', framesMax: 3 },
-    death: { imageSrc: './../Assets/LightingMage/Dead.png', framesMax: 5 }
+    death: { imageSrc: './../Assets/LightningMage/Dead.png', framesMax: 5 }
    },
    hitbox: {
         offset: { x: 40, y: -30 },
@@ -245,6 +245,8 @@ window.addEventListener('keydown', (event) => {
     if (!gameStarted) return; // Block input until overlay clicked
 
     if (!player.dead) {
+        player.velocity.x =0
+
         switch (event.key.toLowerCase()) {
             case 'd':
                 keys.d.pressed = true;
