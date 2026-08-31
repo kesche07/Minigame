@@ -537,7 +537,32 @@ function resetGame(){
   }
 }
 
+// Wraps text into multiple lines if it exceeds maxWidth
+function wrapText(context, text, x, y, maxWidth, lineHeight) {
+  // Split manually added newlines first
+  const inputLines = text.split('\n');
 
+  inputLines.forEach((inputLine) => {
+    const words = inputLine.split(' ');
+    let currentLine = '';
+
+    for (let n = 0; n < words.length; n++) {
+      const testLine = currentLine + words[n] + ' ';
+      const metrics = context.measureText(testLine);
+      const testWidth = metrics.width;
+
+      if (testWidth > maxWidth && n > 0) {
+        context.fillText(currentLine.trim(), x, y);
+        currentLine = words[n] + ' ';
+        y += lineHeight;
+      } else {
+        currentLine = testLine;
+      }
+    }
+    context.fillText(currentLine.trim(), x, y);
+    y += lineHeight;
+  });
+}
 
 
 
@@ -568,12 +593,10 @@ function draw(){
         ctx.fillStyle = '#ffffff';
         ctx.font = '20px Courier New';
 
-        ctx.fillText(
-          `* You feel the heat of ${enemy.name}`,
-          30,
-          50
-        );
+        const flavorText = `* You feel the heat of ${enemy.name}.`;
+        wrapText(ctx, flavorText, 30, 50, canvas.width - 60, 25);
       }
+      
         else if (menuState === 'ACT'){
         ctx.fillStyle = '#ffffff';
       ctx.font = '20px Courier New';
@@ -763,17 +786,10 @@ function draw(){
     ctx.fillStyle = '#ffffff';
     ctx.font = '20px Courier New';
 
-    const lines = textMessage.split('\n');
-
-    lines.forEach((line, index) => {
-      ctx.fillText(
-        line,
-        30,
-        50 + index * 25
-      );
-    });
-
+    // 30px padding left, max width of 340px (adjust based on your box size)
+    wrapText(ctx, textMessage, 30, 50, canvas.width - 60, 25);
   }
+
   else if(gameState === 'VICTORY'){
     ctx.fillStyle = '#ffff00';
     ctx.font = '20px Courier New';
