@@ -2,70 +2,164 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Small Minigame</title>
+  <title>Arcade Minigame</title>
+
+  <!-- Primary SEO Metadata -->
+  <title>Arcade Games - Play Free Web Mini-Games</title>
+  <meta name="description" content="Play fun, interactive web mini-games right in your browser! Discover retro arcade games and challenges.">
+  <meta name="keywords" content="arcade games, mini games, browser games, free web games, retro gaming">
+  <meta name="author" content="Arcade Games">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / Facebook / Discord / WhatsApp (Controls social sharing previews) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yourwebsite.com/"> <!-- Replace with your domain -->
+  <meta property="og:title" content="Arcade Games - Play Free Web Mini-Games">
+  <meta property="og:description" content="Play fun, interactive web mini-games right in your browser!">
+  <meta property="og:image" content="https://yourwebsite.com/Assets/game1thumb.png"> <!-- Link to a cover image -->
+
+  <!-- Twitter / X Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://yourwebsite.com/">
+  <meta name="twitter:title" content="Arcade Games - Play Free Web Mini-Games">
+  <meta name="twitter:description" content="Play fun, interactive web mini-games right in your browser!">
+  <meta name="twitter:image" content="https://yourwebsite.com/Assets/game1thumb.png">
+
   <link rel="stylesheet" href="./style.css">
-  <style>
+  <style> 
+  /* Ensures navbar stays on top of cards when hovering */
     .navbar {
-  font-family:"Jersey 15", sans-serif;
-  width: 100%;
-  background-color: #111;
-  border-bottom: 2px solid #fff;
-  display: flex;
-  justify-content:flex-start;
-  align-items:center;
-  padding: 10px 30px;
-  position: fixed;
-  z-index: 100;
-}
-.grid-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      max-width: 1000px;
-      margin: 0 auto;
+      z-index: 100;
     }
 
-    /* Grid Cards / Links */
+    .grid-container {
+      display: grid;
+      /* Reduced min-width to 180px so cards shrink properly on smaller screens */
+      grid-template-columns: repeat(auto-fill, minmax(clamp(180px, 25vw, 250px), 1fr));
+      row-gap: 24px;
+      column-gap: 20px;
+      max-width: 1000px;
+      width: 90%;
+      margin: 40px auto;
+    }
+
+    /* Individual Card Wrapper */
     .grid-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Fixed-height card container to keep boxes uniform */
+    .card-container {
+      width: 100%;
+      height: 160px; 
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 150px;
-      background-color: #ffffff;
-      color: #333333;
-      text-decoration: none;
-      font-size: 1.2rem;
-      font-weight: bold;
-      border: 2px solid #dddddd;
-      border-radius: 8px;
-      transition: transform 0.2s, border-color 0.2s;
+      box-sizing: border-box;
     }
 
-    /* Hover effect for basic feedback */
-    .grid-item:hover {
+    /* Image fitting inside the card box */
+    .card-container img {
+      width: 100%;
+      height: 100%;
+      padding: 10px;
+      border: 3px solid yellow;
+      border-radius: 20px;
+      object-fit: cover;
+      box-sizing: border-box;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+
+    /* Styling for non-image card boxes (like About) */
+    .about-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid yellow;
+      border-radius: 20px;
+      box-sizing: border-box;
+      background-color: #000000;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .about-box h3 {
+      margin: 0;
+      color: #ffffff;
+      font-family: "Jersey 15", sans-serif;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    /* Text Label OUTSIDE the box */
+    .card-label {
+      font-family: "Jersey 15", sans-serif;
+      font-size: x-large;
+      font-weight: bold;
+      color: #ffe100;
+      text-align: center;
+      transition: color 0.2s;
+    }
+
+    /* Hover effects */
+    .grid-item:hover .card-container img,
+    .grid-item:hover .about-box {
       transform: translateY(-4px);
       border-color: #007bff;
+      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    }
+
+    .grid-item:hover .card-label {
       color: #007bff;
     }
 
   </style>
 </head>
 <body>
-<audio id="bg-music" autoplay loop>
-  <source src="./Assets/Audios/indexbg.mp3" type="audio/mpeg">
-</audio>
-
+  <audio id="bg-music" autoplay loop>
+    <source src="./Assets/Audios/indexbg.mp3" type="audio/mpeg">
+  </audio>
 
   <nav class="navbar">
     <div class="Home"><a href="#"><h1>🏠︎</h1></a></div>
     <div class="nav-brand">ARCADE GAMES</div>
   </nav>
 
+  <!-- ONLY ONE GRID CONTAINER WRAPS ALL ITEMS -->
   <div class="grid-container">
-    <a href="Game1/game.html" class="grid-item">Game 1</a>
-    <a href="Game2/game2.html" class="grid-item">Game2 </a>
-    <a href="./about.html" class="grid-item">About & Contact</a>
-    
+
+    <!-- Game 1 -->
+    <a href="Game1/game.html" class="grid-item">
+      <div class="card-container">
+        <img src="./Assets/game1thumb.png" alt="Thumbnail for Game 1">
+      </div>
+      <span class="card-label">Game 1</span>
+    </a>
+
+    <!-- Game 2 -->
+    <a href="Game2/game2.html" class="grid-item">
+      <div class="card-container">
+        <img src="./Assets/game2thumb.png" alt="Thumbnail for Game 2">
+      </div>
+      <span class="card-label">Game 2</span>
+    </a>
+
+    <!-- About & Contact -->
+    <a href="./about.html" class="grid-item">
+      <div class="card-container">
+        <div class="about-box">
+          <h3>About This Page</h3>
+        </div>
+      </div>
+      <span class="card-label">About & Contact</span>
+    </a>
+
   </div>
 </body>
 </html>
