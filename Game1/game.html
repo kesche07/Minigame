@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Small Minigame</title>
+  <title>Battle Arena</title>
   <link rel="stylesheet" href="./../style.css">
   <style>
   @import url('https://fonts.googleapis.com/css2?family=Jersey+15&display=swap');
@@ -214,13 +214,18 @@ button:active {
   <!-- Fixed Navbar -->
   <nav class="navbar">
     <div class="Home"><a href="./../index.html"><h1>🏠︎</h1></a></div>
-    <div class="nav-brand">BATTLE ARENA</div>
+    <div class="nav-brand">FIGHTER ARENA</div>
     <ul class="nav-links">
       <li><a href="#arena">Game1</a></li>
       <li><a href="./../Game2/game2.html">Game2</a></li>
       <li><a href="javascript:void(0);" onclick="window.location.reload();">Reset</a></li>
     </ul>
   </nav>
+
+  <audio id="bg-music" autoplay loop>
+  <source src="./../Assets/Audios/game1bg.mp3" type="audio/mpeg">
+</audio>
+
 
  <div id="controls-overlay" class="overlay">
   <div class="overlay-content">

@@ -186,6 +186,7 @@ window.addEventListener('keydown' , (e) =>{
     if (gameState === 'MENU' && menuState !== 'MAIN') {
         menuState = 'MAIN';
         selectedItemIndex = 0;
+        enemySprite.switchSprite('idle');
     }
   }
 
@@ -258,6 +259,8 @@ function showTextMessage(msg){
   gameState = 'TEXT_DISPLAY';
   textMessage = msg;
 
+  enemySprite.switchSprite('talking')
+
   textTimeout = setTimeout(() =>{
     if (gameState === 'TEXT_DISPLAY'){
       startEnemyTurn();
@@ -300,6 +303,7 @@ function executeAttack(){
 
   if (lastHitDamage > 0) {
     enemySprite.takeHit();
+    enemySprite.switchSprite('takehit')
   }
 
   // Reduce enemy HP
@@ -382,6 +386,8 @@ function startEnemyTurn(){
   keys['d'] = false;
   gameState = 'ENEMY_TURN';
 
+  enemySprite.switchSprite('fighting');
+
   //moves soul to center
   soul.x = canvas.width /2;
   soul.y = canvas.height/2;
@@ -400,7 +406,9 @@ function startEnemyTurn(){
     bullets = [];
     if (gameState === 'ENEMY_TURN') {
       gameState = 'MENU';
+      enemySprite.switchSprite('idle');
     }
+    
   }, 6000);
 }
 
@@ -526,6 +534,8 @@ function resetGame(){
   menuState = 'MAIN';
 
   bullets = [];
+
+  enemySprite.switchSprite('idle');
 
   updateHpUI();
 
@@ -953,4 +963,45 @@ update = function() {
   updateTouchUI();
 };
 
-draw();
+
+
+async function loadGameData() {
+  try {
+    const response = await fetch('./../JS/characters.json');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const fullData = await response.json();
+    const undertaleData = fullData.undertaleGame;
+
+    // Load Items & Enemy Stats from JSON
+    inventory = undertaleData.items;
+    enemy.name = undertaleData.enemy.name;
+    enemy.hp = undertaleData.enemy.maxHp;
+    enemy.maxHp = undertaleData.enemy.maxHp;
+
+    // Set Sprites onto enemySprite instance
+    if (undertaleData.sprites) {
+      const loadedSprites = undertaleData.sprites;
+      
+      // Preload images for each sprite
+      for (const key in loadedSprites) {
+        const img = new Image();
+        img.src = loadedSprites[key].imageSrc;
+        loadedSprites[key].image = img;
+      }
+      
+      // Assign the populated sprites object
+      enemySprite.sprites = loadedSprites;
+      
+      // Force switch to idle after JSON loading is complete
+      enemySprite.switchSprite('idle');
+    }
+
+  } catch (error) {
+    console.error("Failed to load game data:", error);
+  } finally {
+    draw();
+  }
+}
+loadGameData();

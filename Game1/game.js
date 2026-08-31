@@ -27,78 +27,10 @@ const shop = new Sprite({
     framesMax: 6
 });
 
-// player creation
-const player = new Fighter({
-   position: { x: 0, y: 0 },
-   velocity: { x: 0, y: 0 },
-   color: 'red',
-   offset: { x: 20, y: 0 },
-   imageSrc: './../Assets/LightningMage/Idle.png',
-   framesMax: 8,
-   scale: 2.5,
-   offset: { x: 100, y: 170 },
-   sprites: {
-    idle: { imageSrc: './../Assets/LightningMage/Idle.png', framesMax: 7 },
-    run: { imageSrc: './../Assets/LightningMage/Run.png', framesMax: 8 },
-    jump: { 
-        imageSrc: './../Assets/LightningMage/Jump.png', 
-        framesMax: 8,
-        frameStart: 0,
-        frameEnd: 3 
-    },
-    fall: { 
-        imageSrc: './../Assets/LightningMage/Jump.png', 
-        framesMax: 8,
-        frameStart: 4,
-        frameEnd: 7 
-    },
-    attack1: { imageSrc: './../Assets/LightningMage/Attack_2.png', framesMax: 4 },
-    takehit: { imageSrc: './../Assets/LightningMage/Hurt.png', framesMax: 3 },
-    death: { imageSrc: './../Assets/LightningMage/Dead.png', framesMax: 5 }
-   },
-   hitbox: {
-        offset: { x: 40, y: -30 },
-        width: 150,
-        height: 180
-   }
-});
+let player;
+let enemy;
 
-// enemy creation
-const enemy = new Fighter({
-    position: { x: 400, y: 100 },
-    velocity: { x: 0, y: 0 },
-    color: 'blue',
-    offset: { x: -50, y: 0 },
-    imageSrc: './../Assets/WandererMagican/Idle.png',
-    framesMax: 4,
-    scale: 2.5,
-    offset: { x: 140, y: 170 },
-    sprites: {
-        idle: { imageSrc: './../Assets/WandererMagican/Idle.png', framesMax: 8 },
-        run: { imageSrc: './../Assets/WandererMagican/Run.png', framesMax: 8 },
-        jump: { 
-        imageSrc: './../Assets/WandererMagican/Jump.png', 
-        framesMax: 8,
-        frameStart: 0,
-        frameEnd: 3 
-    },
-    fall: { 
-        imageSrc: './../Assets/WandererMagican/Jump.png', 
-        framesMax: 8,
-        frameStart: 4,
-        frameEnd: 7
-    },
-        attack1: { imageSrc: './../Assets/WandererMagican/Attack_1.png', framesMax: 7 },
-        takehit: { imageSrc: './../Assets/WandererMagican/Hurt.png', framesMax: 4},
-        death: { imageSrc: './../Assets/WandererMagican/Dead.png', framesMax: 4 }
-    },
-    hitbox: {
-        offset: { x: -120, y: -30 },
-        width: 150,
-        height: 180
-    }
-});
-enemy.draw();
+
 
 const keys = {
     a: { pressed: false },
@@ -130,24 +62,30 @@ function animate() {
     c.fillStyle = 'black';
     c.fillRect(0, 0, canvas.width, canvas.height);
     
+    
+
     background.update();
     shop.update();
+
+    if (!player || !enemy) return;
+
 
     c.fillStyle = 'rgba(255,255,255,0.1)';
     c.fillRect(0, 0, canvas.width, canvas.height);
 
-    player.update();
-    //c.fillStyle = 'rgba(0, 255, 0, 0.4)'; // Semi-transparent green
-//c.fillRect(
- //   player.position.x,
-  //  player.position.y,
-  //  player.width,
-  //  player.height
-//);
 
+    player.update();
+    
     enemy.update();
 
 
+    // Force characters back to idle when grounded, even before game starts
+if (player.velocity.y === 0 && !player.dead) {
+    player.switchSprite('idle');
+}
+if (enemy.velocity.y === 0 && !enemy.dead) {
+    enemy.switchSprite('idle');
+}
     // Pause physics & controls until screen is tapped
     if (!gameStarted) return;
 
@@ -370,3 +308,23 @@ function resetGame(event) {
     displayText.style.display = 'none';
     displayText.innerHTML = '';
 }
+async function loadFighterData() {
+  try {
+    const response = await fetch('./../JS/characters.json');
+    const fullData = await response.json();
+
+    // Extract fighterGame sub-object
+    const fighterData = fullData.fighterGame;
+
+    // Pass the correct nested objects into Fighter constructor
+    player = new Fighter(fighterData.player);
+    enemy = new Fighter(fighterData.enemy);
+
+    // Start animation loop ONLY after characters are created
+    animate();
+  } catch (error) {
+    console.error("Failed to load fighter data:", error);
+  }
+}
+
+loadFighterData();

@@ -34,11 +34,13 @@ class Sprite {
     this.framesElapsed++;
 
     if (this.framesElapsed % this.framesHold === 0) {
-        if (this.frameCurrent < (this.frameEnd ?? this.framesMax - 1)) {
+        const start = this.frameStart ?? 0;
+        const end = this.frameEnd ?? (this.framesMax - 1);
+
+        if (this.frameCurrent < end) {
             this.frameCurrent++;
-        } else if (!this.dead){
-            // Loop back to frameStart or stay on the last frame
-            this.frameCurrent =  0;
+        } else if (!this.dead) {
+            this.frameCurrent = start; // Loop back to frameStart
         }
     }
 }
@@ -118,6 +120,10 @@ class Fighter extends Sprite{
         this.hitbox.position.x = this.position.x + this.hitbox.offset.x
         this.hitbox.position.y = this.position.y   + this.hitbox.offset.y
 
+        //c.strokeStyle = 'yellow';
+        //c.lineWidth = 2;
+        //c.strokeRect(this.position.x, this.position.y, this.width, this.height);
+
         //c.fillStyle = 'rgba(0, 0, 0, 0.5)'
         //c.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height)
 
@@ -156,21 +162,28 @@ class Fighter extends Sprite{
 
         //ovverriding animations when:
         //attacking
-        if(this.image === this.sprites.attack1.image && 
-            this.frameCurrent < this.sprites.attack1.framesMax -1)
-            return
-
-        //taking a hit
-        if(this.image === this.sprites.takehit.image && 
-            this.frameCurrent < this.sprites.takehit.framesMax -1)
-            return
-
-        //death
-        if(this.image === this.sprites.death.image ){
-            if(this.frameCurrent === this.sprites.death.framesMax -1)
-                this.dead=true
-            return
+        if (this.image === this.sprites.death.image) {
+        if (this.frameCurrent === this.sprites.death.framesMax - 1) {
+        this.dead = true;
         }
+        return;
+    }
+
+    //Override all basic animations if attacking or taking hit,
+    // EXCEPT when switching to death!
+    if (
+        sprite !== 'death' &&
+        this.image === this.sprites.takehit.image &&
+        this.frameCurrent < this.sprites.takehit.framesMax - 1
+    ) return;
+
+    if (
+        sprite !== 'death' &&
+        this.image === this.sprites.attack1.image &&
+        this.frameCurrent < this.sprites.attack1.framesMax - 1
+    ) return;
+
+    
         switch(sprite){
             case 'idle':
                 if(this.image !== this.sprites.idle.image){
@@ -276,58 +289,38 @@ class Enemy extends Sprite {
         }
     }
 
-    switchSprite(sprite){
-        // Safe animation override checks
-        if (this.image === this.sprites.death.image) return;
-    if (this.image === this.sprites.takehit.image && this.frameCurrent < this.sprites.takehit.framesMax - 1) return;
-    if (this.image === this.sprites.attack1.image && this.frameCurrent < this.sprites.attack1.framesMax - 1) return;
+        switchSprite(sprite) {
+  // Prevent resetting animation if already playing this sprite
+  if (this.image === this.sprites[sprite]?.image) return;
 
-    if (this.image !== this.sprites[sprite].image || this.currentSprite !== sprite) {
-        this.currentSprite = sprite;
-        this.image = this.sprites[sprite].image;
-        this.framesMax = this.sprites[sprite].framesMax;
-
-        // Set start/end bounds (defaulting to full sheet if not specified)
-        this.frameStart = this.sprites[sprite].frameStart ?? 0;
-        this.frameEnd = this.sprites[sprite].frameEnd ?? (this.framesMax - 1);
-        
-        // Reset current frame to the start frame of the animation
-        this.frameCurrent = this.frameStart;
-    }
+  if (this.sprites[sprite]) {
+    this.image = this.sprites[sprite].image;
+    this.framesMax = this.sprites[sprite].framesMax;
+    this.framesCurrent = 0; // Reset frame count for fresh animation start
+  }
 
 
-        switch(sprite){
-            case 'idle':
-                if (this.sprites.idle && this.image !== this.sprites.idle.image) {
-                    this.image = this.sprites.idle.image
-                    this.framesMax = this.sprites.idle.framesMax
-                    this.frameCurrent = 0
-                }
-                break
+        // Priority overrides (Take Hit / Attack lock)
+        if (
+            this.sprites.takehit &&
+            this.image === this.sprites.takehit.image &&
+            this.frameCurrent < this.sprites.takehit.framesMax - 1
+        ) return;
 
-            case 'talking':
-                if (this.sprites.talking && this.image !== this.sprites.talking.image) {
-                    this.image = this.sprites.talking.image
-                    this.framesMax = this.sprites.talking.framesMax
-                    this.frameCurrent = 0
-                }
-                break
+        if (
+            this.sprites.fighting &&
+            this.image === this.sprites.fighting.image &&
+            this.frameCurrent < this.sprites.fighting.framesMax - 1
+        ) return;
 
-            case 'takehit':
-                if (this.sprites.takehit && this.image !== this.sprites.takehit.image) {
-                    this.image = this.sprites.takehit.image
-                    this.framesMax = this.sprites.takehit.framesMax
-                    this.frameCurrent = 0
-                }
-                break
+        // Apply Sprite Swap
+        if (this.image !== this.sprites[sprite].image) {
+            this.image = this.sprites[sprite].image;
+            this.framesMax = this.sprites[sprite].framesMax;
 
-            case 'death':
-                if (this.sprites.death && this.image !== this.sprites.death.image) {
-                    this.image = this.sprites.death.image
-                    this.framesMax = this.sprites.death.framesMax
-                    this.frameCurrent = 0
-                }
-                break
+            this.frameStart = this.sprites[sprite].frameStart ?? 0;
+            this.frameEnd = this.sprites[sprite].frameEnd ?? (this.framesMax - 1);
+            this.frameCurrent = this.frameStart;
         }
     }
 }
