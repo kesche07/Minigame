@@ -51,3 +51,20 @@ function startGame() {
 
 overlay.addEventListener('click', startGame, { once: true });
 overlay.addEventListener('touchstart', startGame, { once: true });
+
+// Loading JSON for the Undertale game
+async function initGameData() {
+  const response = await fetch('./assets/undertale_data.json');
+  const data = await response.json();
+
+  // Populate dynamic game arrays and objects from JSON
+  inventory = data.items;
+  enemy.name = data.enemy.name;
+  enemy.hp = data.enemy.maxHp;
+  enemy.maxHp = data.enemy.maxHp;
+
+  // Start game loop after data is ready
+  draw();
+}
+
+initGameData();

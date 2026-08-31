@@ -1,0 +1,44 @@
+{
+  "fighterGame": {
+    "player": {
+      "name": "Lightning Mage",
+      "scale": 2.5,
+      "hitbox": { "offset": { "x": 40, "y": -30 }, "width": 150, "height": 180 },
+      "sprites": {
+        "idle": { "imageSrc": "./../Assets/LightningMage/Idle.png", "framesMax": 7 },
+        "run": { "imageSrc": "./../Assets/LightningMage/Run.png", "framesMax": 8 },
+        "attack1": { "imageSrc": "./../Assets/LightningMage/Attack_2.png", "framesMax": 4 },
+        "takehit": { "imageSrc": "./../Assets/LightningMage/Hurt.png", "framesMax": 3 },
+        "death": { "imageSrc": "./../Assets/LightningMage/Dead.png", "framesMax": 5 }
+      }
+    },
+    "enemy": {
+      "name": "Wanderer Magician",
+      "scale": 2.5,
+      "hitbox": { "offset": { "x": -120, "y": -30 }, "width": 150, "height": 180 },
+      "sprites": {
+        "idle": { "imageSrc": "./../Assets/WandererMagican/Idle.png", "framesMax": 8 },
+        "run": { "imageSrc": "./../Assets/WandererMagican/Run.png", "framesMax": 8 },
+        "attack1": { "imageSrc": "./../Assets/WandererMagican/Attack_1.png", "framesMax": 7 },
+        "takehit": { "imageSrc": "./../Assets/WandererMagican/Hurt.png", "framesMax": 4 },
+        "death": { "imageSrc": "./../Assets/WandererMagican/Dead.png", "framesMax": 4 }
+      }
+    }
+  },
+  "undertaleGame": {
+    "enemy": {
+      "name": "Flameo",
+      "maxHp": 30,
+      "dialogue": {
+        "act": "* You told Flameo a compliment.\n  It didn't understand, but was flattered.",
+        "spareSuccess": "Ribbit (Thank you!)",
+        "spareFail": "* Flameo will not spare you just yet.",
+        "death": "GWAH..."
+      }
+    },
+    "items": [
+      { "name": "Monster Candy", "heal": 10 },
+      { "name": "Spider Donut", "heal": 12 }
+    ]
+  }
+}

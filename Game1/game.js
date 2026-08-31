@@ -370,3 +370,15 @@ function resetGame(event) {
     displayText.style.display = 'none';
     displayText.innerHTML = '';
 }
+async function loadFighterData() {
+  const response = await fetch('./game_data.json');
+  const fullData = await response.json();
+
+  // Extract fighter-specific config
+  const fighterData = fullData.fighterGame;
+
+  // Instantiate Player and Enemy using loaded data
+  // (e.g., fighterData.player.sprites, fighterData.enemy.hitbox, etc.)
+}
+
+loadFighterData();

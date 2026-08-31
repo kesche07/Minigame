@@ -953,4 +953,21 @@ update = function() {
   updateTouchUI();
 };
 
-draw();
+async function loadGameData() {
+  const response = await fetch('./game_data.json');
+  const fullData = await response.json();
+  
+  // Extract undertale-specific config
+  const undertaleData = fullData.undertaleGame;
+
+  // Assign properties
+  inventory = undertaleData.items;
+  enemy.name = undertaleData.enemy.name;
+  enemy.hp = undertaleData.enemy.maxHp;
+  enemy.maxHp = undertaleData.enemy.maxHp;
+
+  // Start your render loop
+  draw();
+}
+
+loadGameData();
