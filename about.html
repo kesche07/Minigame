@@ -2,25 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Small Minigame</title>
+  <title>About&Contact</title>
   <link rel="stylesheet" href="./style.css">
+
+  <!-- Primary SEO Metadata -->
+  <title>Arcade Games - Play Free Web Mini-Games</title>
+  <meta name="description" content="Play fun, interactive web mini-games right in your browser! Discover retro arcade games and challenges.">
+  <meta name="keywords" content="arcade games, mini games, browser games, free web games, retro gaming">
+  <meta name="author" content="Arcade Games">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / Facebook / Discord / WhatsApp (Controls social sharing previews) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kesche07.github.io/Minigame/"> <!-- Replace with your domain -->
+  <meta property="og:title" content="Arcade Games - Play Free Web Mini-Games">
+  <meta property="og:description" content="Play fun, interactive web mini-games right in your browser!">
+  <meta property="og:image" content="https://github.com/kesche07/Minigame/blob/main/Assets/background.png"> <!-- Link to a cover image -->
+
+  <!-- Twitter / X Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://kesche07.github.io/Minigame/">
+  <meta name="twitter:title" content="Arcade Games - Play Free Web Mini-Games">
+  <meta name="twitter:description" content="Play fun, interactive web mini-games right in your browser!">
+  <meta name="twitter:image" content="https://github.com/kesche07/Minigame/blob/main/Assets/background.png">
+
   <style>
-    .navbar {
-  font-family:"Jersey 15", sans-serif;
-  width: 100%;
-  background-color: #111;
-  border-bottom: 2px solid #fff;
-  display: flex;
-  justify-content:flex-start;
-  align-items:center;
-  padding: 10px 30px;
-  position: fixed;
-  z-index: 100;
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+hr{
+    border-style: none;
+    background-color: #ffffff;
+    width: 5px;
+    
+}
+p,a{
+  
+    background-color: inherit;
+    color:white; 
 }
 p{
-    font-family:"Jersey 15", sans-serif;
+  font-size: larger;
+}
+.item a:hover{
+    color:#35d7ff;
+}
+h1,h2,h3,h4,h5{
+    background-color: inherit;
+    text-shadow: 2px 3px 0px #000000;
+    color:#f7ff00;
+}
+p,h1,h2,h3,h4,h5,a{
+      font-family:"Jersey 15", sans-serif;
 }
 
+
+.card{
+  text-align: center;
+    transition: .1s;
+    background-color: #231a20;
+    border: 4px solid #35a1ff;
+    border-radius: 5px;
+    box-shadow: 5px 5px 0 #000000;
+    color: #35a1ff;
+    margin:30px;
+    padding:20px;
+    width:90%;
+    max-width: 700px;
+}
+.card:hover{
+    transition: .1s;
+    transform: translate(5px, 5px);
+    box-shadow: none;
+    cursor: pointer;
+}
   </style>
 </head>
 <body>
@@ -34,12 +88,43 @@ p{
   <source src="./Assets/Audios/indexbg.mp3" type="audio/mpeg">
 </audio>
 
-  <p>
-    Like the games you see?<br>
+  
+  <div class="card">      
+    <h2>Keschella Agustin Parajuli</h2><br>
+    <h3>Aspiring Software Developer,Rookie 3D Artist</h3>
+    <br>
+    <p >
+        Building code day by day, Rendering at night.
+        <br><br>  
+    </p>
+  </div> 
 
-    COntact for more<br>
-    zxxzxxz
-  </p>
+  <div class="card">
+    <h2>About This Project</h2><br>
+    <p>I created this project heavily inspired by some of my 
+      favourite childhood games like Mortal Kombat and Undertale.
+      <br><br>
+      As my first game project, I wanted to explore various game mechanics that are found in these games.
+      (ie Collisions, Attack System and Turn-Wise Gameplay)
+      
+      <br><br>
+    </p>
+  </div>
+
+  <div class="card">
+  <div class="title"><h1>Want to work together?</h1><br><br>
+        <h2>Contact Me!<br>
+        ↓</h2>
+    </div>
+  </div>
+
+    <div class="card">
+        <p>
+            Email: keschellap@gmail.com<br>
+            LinkedIn: <a href="https://www.linkedin.com/in/keschella-parajuli-b09b5542b/">
+              Keschella Agustin Parajuli</a><br>
+            Github: <a href="https://github.com/kesche07">kesche07</a>
+        </p>
 
  
   <script src="./JS/utils.js"></script>
