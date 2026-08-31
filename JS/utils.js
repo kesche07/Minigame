@@ -1,3 +1,11 @@
+const music = document.getElementById('bg-music');
+  music.volume = 0.1; // 30% volume
+
+  // Start on first user click/tap
+  window.addEventListener('click', () => {
+    music.play().catch(() => {});
+  }, { once: true });
+
 function rectangularCollision({rectangle1, rectangle2}){
     return (
         rectangle1.hitbox.position.x + rectangle1.hitbox.width >= rectangle2.position.x && 
@@ -7,18 +15,20 @@ function rectangularCollision({rectangle1, rectangle2}){
     )
 }
 
-function findWinner({player,enemy,timerId}){
-    clearTimeout(timerId)
-    document.querySelector('#endscreen').style.display = "flex"
-    if(player.health === enemy.health){
-            document.querySelector('#endscreen').innerHTML = 'Tie'
+function findWinner({player, enemy, timerId}){
+    clearTimeout(timerId);
+    const endScreenEl = document.querySelector('#endscreen');
+    
+    if (endScreenEl) {
+        endScreenEl.style.display = "flex";
+        if(player.health === enemy.health){
+            endScreenEl.innerHTML = 'Tie';
+        } else if(player.health > enemy.health){
+            endScreenEl.innerHTML = 'Player 1 Wins !!';
+        } else {
+            endScreenEl.innerHTML = 'Player 2 Wins !!';
         }
-        else if(player.health >enemy.health){
-            document.querySelector('#endscreen').innerHTML = 'Player 1 Wins !!'
-        }
-        else{
-            document.querySelector('#endscreen').innerHTML = 'Player 2 Wins !!'
-        }
+    }
 }
 
 let timer = 60
@@ -43,7 +53,7 @@ function startGame() {
   overlay.style.display = 'none';
 
   // Start the countdown timer only after the player clicks
-  decreaseTimer();
+  
 
   // If you have a main animation/game loop function, start it here:
   // animate(); 
@@ -52,19 +62,3 @@ function startGame() {
 overlay.addEventListener('click', startGame, { once: true });
 overlay.addEventListener('touchstart', startGame, { once: true });
 
-// Loading JSON for the Undertale game
-async function initGameData() {
-  const response = await fetch('./assets/undertale_data.json');
-  const data = await response.json();
-
-  // Populate dynamic game arrays and objects from JSON
-  inventory = data.items;
-  enemy.name = data.enemy.name;
-  enemy.hp = data.enemy.maxHp;
-  enemy.maxHp = data.enemy.maxHp;
-
-  // Start game loop after data is ready
-  draw();
-}
-
-initGameData();
