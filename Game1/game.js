@@ -30,8 +30,6 @@ const shop = new Sprite({
 let player;
 let enemy;
 
-
-
 const keys = {
     a: { pressed: false },
     d: { pressed: false },
