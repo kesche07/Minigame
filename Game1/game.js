@@ -310,7 +310,7 @@ function resetGame(event) {
 }
 async function loadFighterData() {
   try {
-    const response = await fetch('../JS/characters.json');
+    const response = await fetch('./../JS/characters.json');
     const fullData = await response.json();
 
     // Extract fighterGame sub-object

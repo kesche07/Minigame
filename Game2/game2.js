@@ -967,7 +967,7 @@ update = function() {
 
 async function loadGameData() {
   try {
-    const response = await fetch('../JS/characters.json');
+    const response = await fetch('./../JS/characters.json');
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
