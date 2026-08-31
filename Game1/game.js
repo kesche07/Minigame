@@ -208,7 +208,7 @@ function animate() {
     // Player attacking detection
     if (rectangularCollision({ rectangle1: player, rectangle2: enemy }) &&
         player.isAttacking && 
-        player.frameCurrent === 3
+        player.frameCurrent === 2
     ) {
         enemy.takeHit();
         player.isAttacking = false;
