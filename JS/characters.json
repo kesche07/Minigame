@@ -39,13 +39,13 @@
       "sprites": {
         "idle": { "imageSrc": "./../Assets/WandererMagican/Idle.png", "framesMax": 8 },
         "jump": { 
-            "imageSrc": "./../Assets/LightningMage/Jump.png", 
+            "imageSrc": "./../Assets/WandererMagican/Jump.png", 
             "framesMax": 8,
             "frameStart": 0,
             "frameEnd": 3
         },
         "fall": { 
-            "imageSrc": "./../Assets/LightningMage/Jump.png", 
+            "imageSrc": "./../Assets/WandererMagican/Jump.png", 
             "framesMax": 8,
             "frameStart": 4,
             "frameEnd": 7
