@@ -11,8 +11,6 @@ c.fillRect(0, 0, canvas.width, canvas.height);
 const gravity = 0.5;
 let gameStarted = false; // State flag to control game start
 
-// Sprite creations
-
 // bg creation
 const background = new Sprite({
     position: { x: 0, y: 0 },
